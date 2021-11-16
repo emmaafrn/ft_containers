@@ -52,9 +52,11 @@ public:
 	}
 
 	void	clear(){
-		for (size_type i = _capacity - 1 ; i > 0; i--){
-			_alloc.destroy(&_tab[i]);
-			&tab[i] = NULL;
+		if (_capacity > 0){
+			for (size_type i = _capacity - 1 ; i > 0; i--){
+				_alloc.destroy(&_tab[i]);
+				&tab[i] = NULL;
+			}
 		}
 		_alloc.deallocate(_tab);
 		_tab = NULL;
@@ -84,14 +86,56 @@ public:
 		_tab[_size] = val;
 		_size++;
 	}
+
+	void	pop_back(){
+		if (_size < 1)
+			return ;
+		_alloc.destroy(&_tab[_size - 1]);
+		_size--;
+	}
+
+	void	swap (vector& x){
+		value_type	*tmp;
+		size_type	size_tmp = _size;
+		size_type	capacity_tmp = _capacity;
+		Allocator	alloc_tmp = _alloc;
+
+		tmp = _tab;
+		_tab = x->_tab;
+		x->_tab = tmp;
+		
+	}
+
+	size_type size() const{
+		return (_size);
+	}
+	size_type capacity() const{
+		return (_capacity);
+	}
+	bool empty() const{
+		if (_size == 0)
+			return (1);
+		return (0);
+	}
+	vector& operator= (const vector& x){
+		*this->clear();
+		_alloc = x->_alloc;
+		_tab = _alloc.allocate(x->_size);
+		for (size_type i = 0 ; i < x->_size ; i++){
+			_alloc.construct(&tab[i], x->_tab[i]);
+		}
+		_capacity = x->_capacity;
+		_size = x->_size;
+	}
+
+
 };
 
 
 
 
 
-
-
-
-
 #endif
+
+
+
