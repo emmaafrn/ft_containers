@@ -23,15 +23,15 @@ struct random_access_iterator_tag
 template<class T>
 class random_access_iterator : iterator<random_access_iterator_tag, T>{
 private:
-	pointer	_ptr;
+	typename random_access_iterator::pointer	_ptr;
 public:
-	Iterator();
-	~Iterator();
+	// random_access_iterator();
+	// ~random_access_iterator();
 	random_access_iterator	&operator++(void){
 		_ptr++;
 		return (*this);
 	}
-	random_access_iterator	operator++(void){
+	random_access_iterator	operator++(int){
 		random_access_iterator	prev = *this;
 
 		_ptr++;
@@ -41,15 +41,11 @@ public:
 		_ptr--;
 		return (*this);
 	}
-	random_access_iterator	operator--(void){
+	random_access_iterator	operator--(int){
 		random_access_iterator	prev = *this;
 
 		_ptr--;
 		return (prev);
-	}
-	random_access_iterator	&operator+(const random_access_iterator &rhs){
-		_ptr += rhs._ptr;
-		return (*this);
 	}
 	random_access_iterator	&operator-(const random_access_iterator &rhs){
 		_ptr -= rhs._ptr;
@@ -71,22 +67,45 @@ public:
 		_ptr -= x;
 		return (*this);
 	}
-	bool	operator<(random_access_iterator lhs, random_access_iterator rhs){
+	random_access_iterator	&operator=(const random_access_iterator &rhs){
+		_ptr = rhs._ptr;
+		return (*this);
+	}
+	T*	&operator*(void){
+		return (_ptr);
+	}
+	template<typename A, typename B>
+	friend bool	operator==(random_access_iterator<A> lhs, random_access_iterator<B> rhs){
+		if (lhs._ptr == rhs._ptr)
+			return (1);
+		return (0);
+	}
+	template<typename A, typename B>
+	friend bool	operator!=(random_access_iterator<A> lhs, random_access_iterator<B> rhs){
+		if (lhs._ptr != rhs._ptr)
+			return (1);
+		return (0);
+	}
+	template<typename A, typename B>
+	friend bool	operator<(random_access_iterator<A> lhs, random_access_iterator<B> rhs){
 		if (lhs._ptr < rhs._ptr)
 			return (1);
 		return (0);
 	}
-	bool	operator>(random_access_iterator lhs, random_access_iterator rhs){
+	template<typename A, typename B>
+	friend bool	operator>(random_access_iterator<A> lhs, random_access_iterator<B> rhs){
 		if (lhs._ptr > rhs._ptr)
 			return (1);
 		return (0);
 	}
-	bool	operator<=(random_access_iterator lhs, random_access_iterator rhs){
+	template<typename A, typename B>
+	friend bool	operator<=(random_access_iterator<A> lhs, random_access_iterator<B> rhs){
 		if (lhs._ptr <= rhs._ptr)
 			return (1);
 		return (0);
 	}
-	bool	operator>=(random_access_iterator lhs, random_access_iterator rhs){
+	template<typename A, typename B>
+	friend bool	operator>=(random_access_iterator<A> lhs, random_access_iterator<B> rhs){
 		if (lhs._ptr >= rhs._ptr)
 			return (1);
 		return (0);
