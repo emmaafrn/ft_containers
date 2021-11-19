@@ -140,6 +140,16 @@ public:
 			return (NULL);
 		return (&_tab[_size]);
 	}
+	const_iterator begin() const{
+		if (_size == 0)
+			return (NULL);
+		return (_tab);
+	}
+	const_iterator end() const{
+		if (_size == 0)
+			return (NULL);
+		return (&_tab[_size]);
+	}
 };
 
 
