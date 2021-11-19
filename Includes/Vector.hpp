@@ -3,6 +3,7 @@
 
 #include "Iterator.hpp"
 #include <memory>
+#include <iostream>
 
 template<typename T, class Allocator = std::allocator<T> >
 class	vector{
@@ -12,8 +13,8 @@ typedef T											value_type;
 typedef Allocator									allocator_type;
 typedef typename allocator_type::reference			reference;
 typedef typename allocator_type::const_reference	const_reference;
-// typedef implementation-defined						iterator;
-// typedef implementation-defined						const_iterator;
+typedef random_access_iterator<T>					iterator;
+typedef random_access_iterator<const T>				const_iterator;
 typedef typename allocator_type::size_type			size_type;
 typedef typename allocator_type::difference_type	difference_type;
 typedef typename allocator_type::pointer			pointer;
@@ -22,10 +23,11 @@ typedef typename allocator_type::const_pointer		const_pointer;
 // typedef std::reverse_iterator<const_iterator>		const_reverse_iterator;
 
 private:
-	Allocator	_alloc;
-	value_type	*_tab;
-	size_type	_size;
-	size_type	_capacity;
+	Allocator					_alloc;
+	value_type					*_tab;
+	size_type					_size;
+	size_type					_capacity;
+
 public:
 	explicit vector (const allocator_type& alloc = allocator_type()) : _size(0), _tab(NULL), _alloc(alloc), _capacity(0){}
 	explicit vector (size_type n, const value_type& val = value_type(), const allocator_type& alloc = allocator_type()) : _alloc(alloc), _size(n), _capacity(n){
@@ -126,12 +128,18 @@ public:
 		_size = x->_size;
 	}
 	reference	operator[](size_type n){
-		if (n > _size || n < 0)
-			throw std::exception();
 		return (_tab[n]);
 	}
-
-
+	iterator begin(){
+		if (_size == 0)
+			return (NULL);
+		return (_tab);
+	}
+	iterator end(){
+		if (_size == 0)
+			return (NULL);
+		return (&_tab[_size]);
+	}
 };
 
 

@@ -25,8 +25,15 @@ class random_access_iterator : iterator<random_access_iterator_tag, T>{
 private:
 	typename random_access_iterator::pointer	_ptr;
 public:
-	// random_access_iterator();
-	// ~random_access_iterator();
+	random_access_iterator(void){
+		_ptr = NULL;
+	}
+	random_access_iterator(const random_access_iterator &copy){
+		_ptr = copy._ptr;
+	}
+	~random_access_iterator(){
+		
+	}
 	random_access_iterator	&operator++(void){
 		_ptr++;
 		return (*this);
