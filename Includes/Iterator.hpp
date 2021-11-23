@@ -3,9 +3,12 @@
 
 #include <cstddef>
 
+namespace ft{
+
 template<class Category, class T, class Distance = ptrdiff_t, class Pointer = T*, class Reference = T&>
 struct iterator
 {
+	public :
 	typedef T			value_type;
 	typedef Distance	difference_type;
 	typedef Pointer		pointer;
@@ -20,14 +23,19 @@ struct random_access_iterator_tag
 
 template<class T>
 class random_access_iterator : iterator<random_access_iterator_tag, T>{
+	public :
+	typedef typename random_access_iterator::pointer pointer;
 private:
-	typename random_access_iterator::pointer	_ptr;
+	pointer	_ptr;
 public:
 	random_access_iterator(void){
 		_ptr = NULL;
 	}
 	random_access_iterator(const random_access_iterator &copy){
 		_ptr = copy._ptr;
+	}
+	random_access_iterator(const pointer non){
+		_ptr = non;
 	}
 	~random_access_iterator(){
 		
@@ -76,8 +84,8 @@ public:
 		_ptr = rhs._ptr;
 		return (*this);
 	}
-	T*	&operator*(void){
-		return (_ptr);
+	T	&operator*(void){
+		return (*_ptr);
 	}
 	template<typename A, typename B>
 	friend bool	operator==(random_access_iterator<A> lhs, random_access_iterator<B> rhs){
@@ -117,5 +125,6 @@ public:
 	}
 };
 
+}
 
 #endif
