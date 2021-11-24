@@ -22,7 +22,7 @@ struct random_access_iterator_tag
 };
 
 template<class T>
-class random_access_iterator : iterator<random_access_iterator_tag, T>{
+class random_access_iterator : public iterator<random_access_iterator_tag, T>{
 	public :
 	typedef typename random_access_iterator::pointer pointer;
 private:
@@ -60,25 +60,27 @@ public:
 		_ptr--;
 		return (prev);
 	}
-	random_access_iterator	&operator-(const random_access_iterator &rhs){
-		_ptr -= rhs._ptr;
-		return (*this);
+	friend int	operator-(const random_access_iterator &lhs, const random_access_iterator &rhs){
+	int res = lhs._ptr - rhs._ptr;
+		return (res);
 	}
-	random_access_iterator	&operator+(int x){
+	friend random_access_iterator	operator+(const random_access_iterator &lhs, int x){
+		random_access_iterator	it;
+
+		it._ptr = lhs._ptr + x;
+		return (it);
+	}
+	friend random_access_iterator	operator-(const random_access_iterator &lhs, int x){
+		random_access_iterator	it;
+
+		it._ptr = lhs._ptr - x;
+		return (it);
+	}
+	void	operator+=(int x){
 		_ptr += x;
-		return (*this);
 	}
-	random_access_iterator	&operator-(int x){
+	void	operator-=(int x){
 		_ptr -= x;
-		return (*this);
-	}
-	random_access_iterator	&operator+=(int x){
-		_ptr += x;
-		return (*this);
-	}
-	random_access_iterator	&operator-=(int x){
-		_ptr -= x;
-		return (*this);
 	}
 	random_access_iterator	&operator=(const random_access_iterator &rhs){
 		_ptr = rhs._ptr;

@@ -4,6 +4,8 @@
 #include <cstddef>
 #include "Iterator.hpp"
 
+namespace ft{
+
 template<class Category, class T, class Distance = ptrdiff_t, class Pointer = T*, class Reference = T&>
 struct reverseiterator
 {
@@ -22,7 +24,7 @@ struct rev_random_access_iterator_tag
 template<class T>
 class rev_random_access_iterator : reverseiterator<rev_random_access_iterator_tag, T>{
 private:
-	typename random_access_iterator it;
+	random_access_iterator it;
 public:
 	rev_random_access_iterator(){
 		it.random_access_iterator();
@@ -106,7 +108,7 @@ public:
 	}
 };
 
-
+}
 
 
 

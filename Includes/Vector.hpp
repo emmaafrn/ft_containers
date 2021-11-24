@@ -2,6 +2,7 @@
 # define VECTOR_HPP
 
 #include "Iterator.hpp"
+#include "utils.hpp"
 #include <exception>
 #include <memory>
 #include <iostream>
@@ -44,19 +45,18 @@ public:
 	}
 
 	template <class InputIterator>
-	vector (InputIterator first, InputIterator last, const allocator_type& alloc = allocator_type()) : _alloc(alloc){
+	vector (typename enable_if<!is_integral<InputIterator>::value, InputIterator>::type first, InputIterator last, const allocator_type& alloc = allocator_type()) : _alloc(alloc), _size(0){
 		size_type	i = 0;
 		
-		for (size_type j = 0 ; j < (last - first) ; j++){
-			_size = j;
+		for (size_type j = 0 ; j < size_type(last - first) ; j++){
+			_size++;
 		}
-		
 		_tab = _alloc.allocate(_size);
 		while (i < _size){
-			_alloc.construct(&_tab[i], *first++);
+			_alloc.construct(&_tab[i], *first);
+			first++;
 			i++;
 		}
-
 	}
 	
 	vector (const vector& x) : _alloc(x._alloc), _size(x._size), _capacity(x._capacity){
@@ -130,6 +130,10 @@ public:
 		return (_capacity);
 	}
 
+	size_type max_size() const{
+		return (_alloc.max_size());
+	}
+
 	bool empty() const{
 		if (_size == 0)
 			return (1);
@@ -169,13 +173,37 @@ public:
 	}
 	reference at (size_type n){
 		if (n >= _size)
-			throw std::out_of_range("out_of_range");
+			throw std::out_of_range("vector");
 		return (_tab[n]);
 	}
 	const_reference at (size_type n) const{
 		if (n >= _size)
-			throw std::out_of_range("out_of_range");
+			throw std::out_of_range("vector");
 		return (&(_tab[n]));
+	}
+	reference front(){
+		return (_tab[_size - 1]);
+	}
+	const_reference front() const{
+		return (_tab[_size - 1]);
+	}
+	reference back(){
+		return (*_tab);
+	}
+	const_reference back() const{
+		return (*_tab);
+	}
+	void resize (size_type n, value_type val = value_type()){
+		value_type	*tmp;
+		size_type	i = 0;
+
+		tmp = _alloc.allocate(n);
+		for (; i < _size && i < n; i++) _alloc.construct(&tmp[i], _tab[i]);
+		for (; i < n ; i++) _alloc.construct(&tmp[i], val);
+		_capacity = n;
+		_size = n;
+		this->clear();
+		_tab = tmp;
 	}
 };
 }
