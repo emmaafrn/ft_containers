@@ -96,7 +96,6 @@ public:
 			_capacity = capacity_tmp * 2;
 			_alloc = alloc_tmp;
 			_size = size_tmp;
-			_capacity = capacity_tmp;
 			_tab = tmp;
 		}
 		_tab[_size] = val;
