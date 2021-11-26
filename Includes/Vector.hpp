@@ -88,17 +88,17 @@ public:
 		Allocator	alloc_tmp = _alloc;
 
 		if (_size == _capacity){
-			tmp = _alloc.allocate(_size * 2);
+			tmp = _alloc.allocate((_size + 1) * 2);
 			for (size_type i = 0 ; i < _size ; i++){
-				_alloc.construct(&tmp[i], _tab[i]);
+				_alloc.construct(&(tmp[i]), _tab[i]);
 			}
 			this->clear();
-			_capacity = capacity_tmp * 2;
+			_capacity = (capacity_tmp + 1) * 2;
 			_alloc = alloc_tmp;
 			_size = size_tmp;
 			_tab = tmp;
 		}
-		_tab[_size] = val;
+		_alloc.construct(&(_tab[_size]), val);
 		_size++;
 	}
 
@@ -116,9 +116,14 @@ public:
 		Allocator	alloc_tmp = _alloc;
 
 		tmp = _tab;
-		_tab = x->_tab;
-		x->_tab = tmp;
-		
+		_tab = x._tab;
+		x._tab = tmp;
+		_size = x._size;
+		x._size = size_tmp;
+		_capacity = x._capacity;
+		x._capacity = capacity_tmp;
+		_alloc = x._alloc;
+		x._alloc = alloc_tmp;
 	}
 
 	size_type size() const{
@@ -205,6 +210,10 @@ public:
 		_tab = tmp;
 	}
 };
+	template <class T, class Alloc>
+	void swap (vector<T,Alloc>& x, vector<T,Alloc>& y){
+		x.swap(y);
+	}
 }
 
 #endif
