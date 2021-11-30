@@ -5,26 +5,32 @@
 
 namespace ft{
 
-template<class Category, class T, class Distance = ptrdiff_t, class Pointer = T*, class Reference = T&>
-struct iterator
-{
-	public :
-	typedef T			value_type;
-	typedef Distance	difference_type;
-	typedef Pointer		pointer;
-	typedef Reference	reference;
-	typedef Category	iterator_category;
-};
+// template<class Category, class T, class Distance = ptrdiff_t, class Pointer = T*, class Reference = T&>
+// struct Iterator
+// {
+// 	public :
+// 	typedef T			value_type;
+// 	typedef Distance	difference_type;
+// 	typedef Pointer		pointer;
+// 	typedef Reference	reference;
+// 	typedef Category	iterator_category;
+// };
 
-struct random_access_iterator_tag
-{
-	
-};
+// struct random_access_iterator_tag
+// {
+// 	int lol;
+// };
 
 template<class T>
-class random_access_iterator : public iterator<random_access_iterator_tag, T>{
+class random_access_iterator {// : public Iterator<random_access_iterator_tag, T>{
 	public :
-	typedef typename random_access_iterator::pointer pointer;
+	typedef T			value_type;
+	typedef ptrdiff_t	difference_type;
+	typedef T*		pointer;
+	typedef T&	reference;
+	typedef std::random_access_iterator_tag	iterator_category;
+	// typedef typename random_access_iterator::pointer pointer;
+	// typedef std::random_access_iterator_tag	iterator_category;
 private:
 	pointer	_ptr;
 public:

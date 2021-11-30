@@ -75,8 +75,10 @@ public:
 				_alloc.destroy(&_tab[i]);
 			}
 		}
-		_alloc.deallocate(_tab, _size);
-		_tab = NULL;
+		if (_tab != NULL){
+			_alloc.deallocate(_tab, _size);
+			_tab = NULL;
+		}
 		_size = 0;
 		_capacity = 0;
 	}
@@ -208,6 +210,17 @@ public:
 		_size = n;
 		this->clear();
 		_tab = tmp;
+	}
+	template <class InputIterator>
+	void assign (InputIterator first, InputIterator last){
+		int i = 0;
+		this->clear();
+		_tab = _alloc.allocate(last - first);
+		while (first != last){
+			_alloc.construct(&_tab[i], *first);
+			first++;
+			i++;
+		}
 	}
 };
 	template <class T, class Alloc>
