@@ -2,82 +2,82 @@
 # define ITERATOR_HPP
 
 #include <cstddef>
+#include <iterator>
 
 namespace ft{
 
-// template<class Category, class T, class Distance = ptrdiff_t, class Pointer = T*, class Reference = T&>
-// struct Iterator
-// {
-// 	public :
-// 	typedef T			value_type;
-// 	typedef Distance	difference_type;
-// 	typedef Pointer		pointer;
-// 	typedef Reference	reference;
-// 	typedef Category	iterator_category;
-// };
+template<class Category, class T, class Distance = ptrdiff_t, class Pointer = T*, class Reference = T&>
+struct Iterator
+{
+	public :
+	typedef T			value_type;
+	typedef Distance	difference_type;
+	typedef Pointer		pointer;
+	typedef Reference	reference;
+	typedef Category	iterator_category;
+};
 
-// struct random_access_iterator_tag
-// {
-// 	int lol;
-// };
+struct random_access_iterator_tag
+{
+};
 
 template<class T>
-class random_access_iterator {// : public Iterator<random_access_iterator_tag, T>{
+class ptr_iterator: public Iterator<random_access_iterator_tag, T>{
 	public :
 	typedef T			value_type;
 	typedef ptrdiff_t	difference_type;
 	typedef T*		pointer;
 	typedef T&	reference;
-	typedef std::random_access_iterator_tag	iterator_category;
-	// typedef typename random_access_iterator::pointer pointer;
-	// typedef std::random_access_iterator_tag	iterator_category;
+	typedef random_access_iterator_tag	iterator_category;
+	// typedef typename ptr_iterator::pointer pointer;
+	// typedef std::ptr_iterator_tag	iterator_category;
 private:
 	pointer	_ptr;
 public:
-	random_access_iterator(void){
+	ptr_iterator(void){
 		_ptr = NULL;
 	}
-	random_access_iterator(const random_access_iterator &copy){
+	ptr_iterator(const ptr_iterator &copy){
 		_ptr = copy._ptr;
 	}
-	random_access_iterator(const pointer non){
-		_ptr = non;
+	ptr_iterator(const pointer ptr){
+		_ptr = ptr;
 	}
-	~random_access_iterator(){
+	~ptr_iterator(){
 		
 	}
-	random_access_iterator	&operator++(void){
+	ptr_iterator	&operator++(void){
 		_ptr++;
 		return (*this);
 	}
-	random_access_iterator	operator++(int){
-		random_access_iterator	prev = *this;
+	ptr_iterator	operator++(int){
+		ptr_iterator	prev = *this;
 
 		_ptr++;
 		return (prev);
 	}
-	random_access_iterator	&operator--(void){
+	ptr_iterator	&operator--(void){
 		_ptr--;
 		return (*this);
 	}
-	random_access_iterator	operator--(int){
-		random_access_iterator	prev = *this;
+	ptr_iterator	operator--(int){
+		ptr_iterator	prev = *this;
 
 		_ptr--;
 		return (prev);
 	}
-	friend int	operator-(const random_access_iterator &lhs, const random_access_iterator &rhs){
+	friend int	operator-(const ptr_iterator &lhs, const ptr_iterator &rhs){
 	int res = lhs._ptr - rhs._ptr;
 		return (res);
 	}
-	friend random_access_iterator	operator+(const random_access_iterator &lhs, int x){
-		random_access_iterator	it;
+	friend ptr_iterator	operator+(const ptr_iterator &lhs, int x){
+		ptr_iterator	it;
 
 		it._ptr = lhs._ptr + x;
 		return (it);
 	}
-	friend random_access_iterator	operator-(const random_access_iterator &lhs, int x){
-		random_access_iterator	it;
+	friend ptr_iterator	operator-(const ptr_iterator &lhs, int x){
+		ptr_iterator	it;
 
 		it._ptr = lhs._ptr - x;
 		return (it);
@@ -88,45 +88,47 @@ public:
 	void	operator-=(int x){
 		_ptr -= x;
 	}
-	random_access_iterator	&operator=(const random_access_iterator &rhs){
+	void	operator=(const ptr_iterator &rhs){
 		_ptr = rhs._ptr;
-		return (*this);
 	}
 	T	&operator*(void){
 		return (*_ptr);
 	}
+	reference	operator[](int n){
+		return (_ptr[n]);
+	}
 	template<typename A, typename B>
-	friend bool	operator==(random_access_iterator<A> lhs, random_access_iterator<B> rhs){
+	friend bool	operator==(ptr_iterator<A> lhs, ptr_iterator<B> rhs){
 		if (lhs._ptr == rhs._ptr)
 			return (1);
 		return (0);
 	}
 	template<typename A, typename B>
-	friend bool	operator!=(random_access_iterator<A> lhs, random_access_iterator<B> rhs){
+	friend bool	operator!=(ptr_iterator<A> lhs, ptr_iterator<B> rhs){
 		if (lhs._ptr != rhs._ptr)
 			return (1);
 		return (0);
 	}
 	template<typename A, typename B>
-	friend bool	operator<(random_access_iterator<A> lhs, random_access_iterator<B> rhs){
+	friend bool	operator<(ptr_iterator<A> lhs, ptr_iterator<B> rhs){
 		if (lhs._ptr < rhs._ptr)
 			return (1);
 		return (0);
 	}
 	template<typename A, typename B>
-	friend bool	operator>(random_access_iterator<A> lhs, random_access_iterator<B> rhs){
+	friend bool	operator>(ptr_iterator<A> lhs, ptr_iterator<B> rhs){
 		if (lhs._ptr > rhs._ptr)
 			return (1);
 		return (0);
 	}
 	template<typename A, typename B>
-	friend bool	operator<=(random_access_iterator<A> lhs, random_access_iterator<B> rhs){
+	friend bool	operator<=(ptr_iterator<A> lhs, ptr_iterator<B> rhs){
 		if (lhs._ptr <= rhs._ptr)
 			return (1);
 		return (0);
 	}
 	template<typename A, typename B>
-	friend bool	operator>=(random_access_iterator<A> lhs, random_access_iterator<B> rhs){
+	friend bool	operator>=(ptr_iterator<A> lhs, ptr_iterator<B> rhs){
 		if (lhs._ptr >= rhs._ptr)
 			return (1);
 		return (0);

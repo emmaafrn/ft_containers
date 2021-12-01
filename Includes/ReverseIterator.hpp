@@ -6,113 +6,100 @@
 
 namespace ft{
 
-template<class Category, class T, class Distance = ptrdiff_t, class Pointer = T*, class Reference = T&>
-struct reverseiterator
-{
-	typedef T			value_type;
-	typedef Distance	difference_type;
-	typedef Pointer		pointer;
-	typedef Reference	reference;
-	typedef Category	iterator_category;
-};
-
-struct rev_random_access_iterator_tag
-{
-	
-};
-
 template<class T>
-class rev_random_access_iterator : reverseiterator<rev_random_access_iterator_tag, T>{
-private:
-	random_access_iterator it;
+class reverse_iterator {
 public:
-	rev_random_access_iterator(){
-		it.random_access_iterator();
+	typedef T	iterator_type;
+	typedef typename T::value_type	value_type;
+	typedef typename T::difference_type	difference_type;
+	typedef typename T::pointer	pointer;
+	typedef typename T::reference	reference;
+	typedef typename T::iterator_category iterator_category;
+private:
+	iterator_type it;
+public:
+	reverse_iterator(){
 	}
-	rev_random_access_iterator(const rev_random_access_iterator &copy){
-		it.random_access_iterator(copy);
+	
+	reverse_iterator(iterator_type it): it(it) {
 	}
-	~rev_random_access_iterator(){
-		it.~random_access_iterator();
+	reverse_iterator(const reverse_iterator &copy): it(copy.it) {
 	}
-	rev_random_access_iterator	&operator++(void){
+	~reverse_iterator(){
+	}
+	reverse_iterator	&operator++(void){
 		it--;
 		return (*this);
 	}
-	rev_random_access_iterator	operator++(int){
-		rev_random_access_iterator prev = this;
+	reverse_iterator	operator++(int){
+		reverse_iterator prev = this;
 
 		--it;
 		return (prev);
 	}
-	rev_random_access_iterator	&operator--(void){
+	reverse_iterator	&operator--(void){
 		it++;
 		return (*this);
 	}
-	rev_random_access_iterator	operator--(int){
-		rev_random_access_iterator prev = this;
+	reverse_iterator	operator--(int){
+		reverse_iterator prev = this;
 
 		++it;
 		return (prev);
 	}
-	rev_random_access_iterator	&operator-(const rev_random_access_iterator &rhs){
+	reverse_iterator	&operator-(const reverse_iterator &rhs){
 		it = it + rhs.it;
 		return (*this);
 	}
-	rev_random_access_iterator	&operator+(int x){
+	reverse_iterator	&operator+(int x){
 		it = it - x;
 		return (*this);
 	}
-	rev_random_access_iterator	&operator-(int x){
+	reverse_iterator	&operator-(int x){
 		it = it + x;
 		return (*this);
 	}
-	rev_random_access_iterator	&operator+=(int x){
+	reverse_iterator	&operator+=(int x){
 		it -= x;
 		return (*this);
 	}
-	rev_random_access_iterator	&operator-=(int x){
+	reverse_iterator	&operator-=(int x){
 		it += x;
 		return (*this);
 	}
-	rev_random_access_iterator	&operator=(const rev_random_access_iterator &rhs){
-		
-		return (*this);
+	void	operator=(const reverse_iterator &rhs){
+		it = rhs.it;
 	}
-	T*	&operator*(void){
-		return (it*);
+	value_type	&operator*(void){
+		return (*it);
 	}
 	template<typename A, typename B>
-	friend bool	operator==(rev_random_access_iterator<A> lhs, rev_random_access_iterator<B> rhs){
+	friend bool	operator==(reverse_iterator<A> lhs, reverse_iterator<B> rhs){
 		return (lhs.it == rhs.it);
 	}
 	template<typename A, typename B>
-	friend bool	operator!=(rev_random_access_iterator<A> lhs, rev_random_access_iterator<B> rhs){
+	friend bool	operator!=(reverse_iterator<A> lhs, reverse_iterator<B> rhs){
 		return (lhs.it != rhs.it);
 	}
 	template<typename A, typename B>
-	friend bool	operator<(rev_random_access_iterator<A> lhs, rev_random_access_iterator<B> rhs){
+	friend bool	operator<(reverse_iterator<A> lhs, reverse_iterator<B> rhs){
 		return (lhs.it < rhs.it);
 	}
 	template<typename A, typename B>
-	friend bool	operator>(rev_random_access_iterator<A> lhs, rev_random_access_iterator<B> rhs){
+	friend bool	operator>(reverse_iterator<A> lhs, reverse_iterator<B> rhs){
 		return (lhs.it > rhs.it);
 	}
 	template<typename A, typename B>
-	friend bool	operator<=(rev_random_access_iterator<A> lhs, rev_random_access_iterator<B> rhs){
+	friend bool	operator<=(reverse_iterator<A> lhs, reverse_iterator<B> rhs){
 		return (lhs.it <= rhs.it);
 	}
 	template<typename A, typename B>
-	friend bool	operator>=(rev_random_access_iterator<A> lhs, rev_random_access_iterator<B> rhs){
+	friend bool	operator>=(reverse_iterator<A> lhs, reverse_iterator<B> rhs){
 		return (lhs.it >= rhs.it);
 	}
 };
 
 }
-
-
-
-
 
 
 

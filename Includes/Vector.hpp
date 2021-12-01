@@ -2,6 +2,7 @@
 # define VECTOR_HPP
 
 #include "Iterator.hpp"
+#include "ReverseIterator.hpp"
 #include "utils.hpp"
 #include <exception>
 #include <memory>
@@ -13,24 +14,24 @@ template<typename T, class Allocator = std::allocator<T> >
 class	vector{
 
 public:
-typedef T											value_type;
-typedef Allocator									allocator_type;
-typedef typename allocator_type::reference			reference;
-typedef typename allocator_type::const_reference	const_reference;
-typedef random_access_iterator<T>					iterator;
-typedef random_access_iterator<const T>				const_iterator;
-typedef typename allocator_type::size_type			size_type;
-typedef typename allocator_type::difference_type	difference_type;
-typedef typename allocator_type::pointer			pointer;
-typedef typename allocator_type::const_pointer		const_pointer;
-typedef std::reverse_iterator<iterator>				reverse_iterator;
-typedef std::reverse_iterator<const_iterator>		const_reverse_iterator;
+typedef T																		value_type;
+typedef Allocator																allocator_type;
+typedef typename allocator_type::reference										reference;
+typedef typename allocator_type::const_reference								const_reference;
+typedef ptr_iterator<T>															iterator;
+typedef ptr_iterator<const T>													const_iterator;
+typedef typename allocator_type::size_type										size_type;
+typedef typename allocator_type::difference_type								difference_type;
+typedef typename allocator_type::pointer										pointer;
+typedef typename allocator_type::const_pointer									const_pointer;
+typedef ft::reverse_iterator<iterator>			reverse_iterator;
+typedef ft::reverse_iterator<const_iterator>	const_reverse_iterator;
 
 private:
-	Allocator					_alloc;
-	value_type					*_tab;
-	size_type					_size;
-	size_type					_capacity;
+	Allocator	_alloc;
+	value_type	*_tab;
+	size_type	_size;
+	size_type	_capacity;
 
 public:
 	explicit vector (const allocator_type& alloc = allocator_type()) : _alloc(alloc), _tab(NULL), _size(0), _capacity(0){}
@@ -43,7 +44,6 @@ public:
 			i++;
 		}
 	}
-
 	template <class InputIterator>
 	vector (typename enable_if<!is_integral<InputIterator>::value, InputIterator>::type first, InputIterator last, const allocator_type& alloc = allocator_type()) : _alloc(alloc), _size(0){
 		size_type	i = 0;
@@ -220,6 +220,48 @@ public:
 			_alloc.construct(&_tab[i], *first);
 			first++;
 			i++;
+		}
+	}
+	reverse_iterator rbegin(){
+		reverse_iterator it(end());
+		return it;
+	}
+	const_reverse_iterator rbegin() const{
+		const_reverse_iterator it(end());
+		return it;
+	}
+	reverse_iterator rend(){
+		reverse_iterator it(begin());
+		return it;
+	}
+	const_reverse_iterator rend() const{
+		const_reverse_iterator it(begin());
+		return it;
+	}
+	iterator insert (iterator position, const value_type& val){
+		value_type	tmp;
+		value_type	tmp_bis;
+		iterator	ite(end());
+		iterator	it(begin());
+
+		if (_capacity >= _size + 1){
+			for(; it != position ; it++);
+			tmp = *it;
+			*it = val;
+			it++;
+			while (it != ite){
+				tmp_bis = *it;
+				*it = tmp;
+				tmp = NULL;
+				it++;
+				if (it != ite){
+					tmp = *it;
+					*it = tmp_bis;
+					tmp_bis = NULL;
+					it++;
+				}
+			}
+
 		}
 	}
 };
