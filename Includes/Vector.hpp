@@ -243,6 +243,10 @@ public:
 		value_type	tmp_bis;
 		iterator	ite(end());
 		iterator	it(begin());
+		value_type	*ptr;
+		int			k = 0;
+		value_type	c;
+		value_type	s;
 
 		if (_capacity >= _size + 1){
 			for(; it != position ; it++);
@@ -252,17 +256,45 @@ public:
 			while (it != ite){
 				tmp_bis = *it;
 				*it = tmp;
-				tmp = NULL;
+				k = 1;
 				it++;
 				if (it != ite){
 					tmp = *it;
 					*it = tmp_bis;
-					tmp_bis = NULL;
+					k = 2;
 					it++;
 				}
 			}
-
+			if (k == 2){
+				_alloc.construct(&_tab[_size], tmp);
+				_size++;
+			}
+			if (k == 1){
+				_alloc.construct(&_tab[_size], tmp_bis);
+				_size++;
+			}
 		}
+		else {
+			ptr = _alloc.allocate((_capacity * 2) + 1);
+			for (; it != position ; it++){_alloc.construct(&ptr[k], *it); k++;};
+			_alloc.construct(&ptr[k], val);
+			it++;
+			k++;
+			while (it != ite){
+				_alloc.construct(&ptr[k], *(it - 1));
+				k++;
+				it++;
+			}
+			if (it == ite)
+				_alloc.construct(&ptr[k], *(it - 1));
+			s = k + 1;
+			c = (_capacity * 2) + 1;
+			this->clear();
+			_tab = ptr;
+			_size = s;
+			_capacity = c;
+		}
+		return (begin());
 	}
 };
 	template <class T, class Alloc>

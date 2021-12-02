@@ -62,10 +62,24 @@ void	test_after_swap(){
 
 int	main(void){
 	// test_after_swap();
-	int	tab[4] = {0, 1, 2, 3};
+	// int	tab[4] = {0, 1, 2, 3};
+	ft::vector<int> a;
+	ft::ptr_iterator<int> it;
+	ft::ptr_iterator<int> ite;
 
-	
-
-
+	a.push_back(42);
+	it = a.begin();
+	a.push_back(24);
+	a.push_back(3);
+	ite = a.end();
+	it = a.begin();
+	it = a.insert(++it, 500);
+	ite = a.end();
+	while (it != ite){
+		std::cout << *it << std::endl;
+		it++;
+	}
+	// if (it == ite)
+	// 	std::cout << *it << std::endl;
 	return (0);
 }
