@@ -60,26 +60,50 @@ void	test_after_swap(){
 	std::cout << "r2 = " << r2 << std::endl;
 }
 
-int	main(void){
-	// test_after_swap();
-	// int	tab[4] = {0, 1, 2, 3};
+void	insert_tests(){
 	ft::vector<int> a;
+	ft::vector<int> b;
+	ft::vector<int> c;
 	ft::ptr_iterator<int> it;
 	ft::ptr_iterator<int> ite;
 
+	std::cout << "---------- 1 ----------"<< std::endl;
 	a.push_back(42);
-	it = a.begin();
 	a.push_back(24);
 	a.push_back(3);
-	ite = a.end();
 	it = a.begin();
+	ite = a.end();
 	it = a.insert(++it, 500);
 	ite = a.end();
 	while (it != ite){
 		std::cout << *it << std::endl;
 		it++;
 	}
-	// if (it == ite)
-	// 	std::cout << *it << std::endl;
+	std::cout << "---------- 2 ----------"<< std::endl;
+	int	x = 42;
+	for (int i = 0; i < 10 ; i++) b.push_back(i);
+	it = b.begin();
+	ite = b.end();
+	b.insert(it + 3, 5, x);
+	ite = b.end();
+	it = b.begin();
+	while (it != ite){
+		std::cout << *it << std::endl;
+		it++;
+	}
+	// std::cout << "---------- 3 ----------"<< std::endl;
+	// for (int i = 0; i < 10 ; i++) c.push_back(i);
+	// c.insert(it + 3, it, ite);
+
+
+
+}
+
+int	main(void){
+	// int	tab[4] = {0, 1, 2, 3};
+	
+	// test_after_swap();
+	insert_tests();
+
 	return (0);
 }
