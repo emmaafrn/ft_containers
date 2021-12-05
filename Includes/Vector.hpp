@@ -222,13 +222,15 @@ public:
 			i++;
 		}
 	}
-	// template <class InputIterator>
-	// void assign (InputIterator first, InputIterator last){
-		
-	// }
-	// void assign (size_type n, const value_type& val){
-		
-	// }
+	void assign (size_type n, const value_type& val){
+		int	i = 0;
+		this->clear();
+		_tab = _alloc.allocate(n);
+		while (i < n){
+			_alloc.construct(&_tab[i], val);
+			i++;
+		}
+	}
 	reverse_iterator rbegin(){
 		reverse_iterator it(end());
 		return it;
@@ -338,7 +340,7 @@ public:
 		}
 		else {
 			ptr = _alloc.allocate(c);
-			for (; it != position ; it++){_alloc.construct(&ptr[i], *it); i++;};
+			for (; it != position ; it++)_alloc.construct(&ptr[i], *it);
 			while (n > 0){
 				_alloc.construct(&ptr[i], val);
 				n--;
@@ -353,6 +355,19 @@ public:
 			_tab = ptr;
 			_size = s;
 			_capacity = c;
+		}
+	}
+	void reserve (size_type n){
+		value_type	*tmp;
+		int			i = 0;
+		size_type	s_tmp = _size;
+
+		if (n > _capacity){
+			tmp = _alloc.allocate(n);
+			for (; i < _size ; i++) _alloc.construct(&tmp[i], _tab[i]);
+			this->clear();
+			_size = s_tmp;
+			_capacity = n;
 		}
 	}
 	// template <class InputIterator>
@@ -411,6 +426,18 @@ public:
 	// 		_capacity = c;
 	// 	}
 	// }
+	bool operator==(const vector<Type, Allocator>& left, const vector<Type, Allocator>& right){
+		
+	}
+	bool operator!=(const vector<Type, Allocator>& left, const vector<Type, Allocator>& right){
+
+	}
+	bool operator<(const vector<Type, Allocator>& left, const vector<Type, Allocator>& right){
+
+	}
+	bool operator<=(const vector<Type, Allocator>& left, const vector<Type, Allocator>& right){
+
+	}
 };
 	template <class T, class Alloc>
 	void swap (vector<T,Alloc>& x, vector<T,Alloc>& y){
