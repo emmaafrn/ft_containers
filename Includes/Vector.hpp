@@ -426,22 +426,66 @@ public:
 	// 		_capacity = c;
 	// 	}
 	// }
-	bool operator==(const vector<Type, Allocator>& left, const vector<Type, Allocator>& right){
-		
-	}
-	bool operator!=(const vector<Type, Allocator>& left, const vector<Type, Allocator>& right){
-
-	}
-	bool operator<(const vector<Type, Allocator>& left, const vector<Type, Allocator>& right){
-
-	}
-	bool operator<=(const vector<Type, Allocator>& left, const vector<Type, Allocator>& right){
-
-	}
 };
 	template <class T, class Alloc>
 	void swap (vector<T,Alloc>& x, vector<T,Alloc>& y){
 		x.swap(y);
+	}
+	template <class T, class Alloc>
+	bool operator==(const vector<T, Alloc>& left, const vector<T, Alloc>& right){
+		int	i = 0;
+		
+		if (left._size != right._size)
+			return (0);
+		while (i < right._size){
+			if (left._tab[i] != right._tab[i])
+				return (0);
+			i++;
+		}
+		return (1);
+	}
+	template <class T, class Alloc>
+	bool operator!=(const vector<T, Alloc>& left, const vector<T, Alloc>& right){
+		int	i = 0;
+
+		if (left._size != right._size)
+			return (1);
+		while (i < right._size){
+			if (left._tab[i] != right._tab[i])
+				return (1);
+			i++;
+		}
+		return (0);
+	}
+	template <class T, class Alloc>
+	bool operator<(const vector<T, Alloc>& left, const vector<T, Alloc>& right){
+		if (lexicographical_compare(left.begin(), left.end(), right.begin(), right.end()))
+			return (1);
+		return (0);
+	}
+	template <class T, class Alloc>
+	bool operator<=(const vector<T, Alloc>& left, const vector<T, Alloc>& right){
+		if (lexicographical_compare(left.begin(), left.end(), right.begin(), right.end()))
+			return (1);
+		else if (!lexicographical_compare(right.begin(), right.end(), left.begin(), left.end())
+			&& !lexicographical_compare(left.begin(), left.end(), right.begin(), right.end()))
+			return (1);
+		return (0);
+	}
+	template <class T, class Alloc>
+	bool operator>(const vector<T, Alloc>& left, const vector<T, Alloc>& right){
+		if (lexicographical_compare(right.begin(), right.end(), left.begin(), left.end()))
+			return (1);
+		return (0);
+	}
+	template <class T, class Alloc>
+	bool operator>=(const vector<T, Alloc>& left, const vector<T, Alloc>& right){
+		if (lexicographical_compare(right.begin(), right.end(), left.begin(), left.end()))
+			return (1);
+		else if (!lexicographical_compare(right.begin(), right.end(), left.begin(), left.end())
+			&& !lexicographical_compare(left.begin(), left.end(), right.begin(), right.end()))
+			return (1);
+		return (0);
 	}
 }
 
