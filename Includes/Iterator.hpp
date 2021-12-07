@@ -94,6 +94,9 @@ public:
 	T	&operator*(void){
 		return (*_ptr);
 	}
+	pointer	operator->(void){
+		return (_ptr);
+	}
 	reference	operator[](int n){
 		return (_ptr[n]);
 	}

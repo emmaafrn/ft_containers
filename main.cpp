@@ -84,16 +84,28 @@ void	insert_tests(){
 	for (int i = 0; i < 10 ; i++) b.push_back(i);
 	it = b.begin();
 	ite = b.end();
-	b.insert(it + 3, 5, x);
+	b.insert((it + 3), 5, x);
 	ite = b.end();
 	it = b.begin();
 	while (it != ite){
 		std::cout << *it << std::endl;
 		it++;
 	}
-	// std::cout << "---------- 3 ----------"<< std::endl;
-	// for (int i = 0; i < 10 ; i++) c.push_back(i);
-	// c.insert(it + 3, it, ite);
+	std::cout << "---------- 3 ----------"<< std::endl;
+	
+	ft::vector<int> range;
+
+	for (int i = 42; i < 46 ; i++) range.push_back(i);
+	it = range.begin();
+	ite = range.end();
+	for (int i = 0; i < 10 ; i++) c.push_back(i);
+	c.insert(c.begin() + 1, it, ite);
+	it = c.begin();
+	ite = c.end();
+	while (it != ite){
+		std::cout << *it << std::endl;
+		it++;
+	}
 
 
 

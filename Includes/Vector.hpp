@@ -86,16 +86,16 @@ public:
 	void	push_back(const value_type& val){
 		value_type	*tmp;
 		size_type	size_tmp = _size;
-		size_type	capacity_tmp = _capacity;
+		size_type	capacity_tmp = (_capacity + 1) * 2;
 		Allocator	alloc_tmp = _alloc;
 
 		if (_size == _capacity){
-			tmp = _alloc.allocate((_size + 1) * 2);
-			for (size_type i = 0 ; i < _size ; i++){
-				_alloc.construct(&(tmp[i]), _tab[i]);
-			}
+			if (_size > 0)
+				capacity_tmp = _capacity * 2;
+			tmp = _alloc.allocate(capacity_tmp);
+			for (size_type i = 0 ; i < _size ; i++) _alloc.construct(&(tmp[i]), _tab[i]);
 			this->clear();
-			_capacity = (capacity_tmp + 1) * 2;
+			_capacity = capacity_tmp;
 			_alloc = alloc_tmp;
 			_size = size_tmp;
 			_tab = tmp;
@@ -162,6 +162,10 @@ public:
 		return (_tab[n]);
 	}
 
+	const_reference	operator[](size_type n) const{
+		return (_tab[n]);
+	}
+
 	iterator begin(){
 		return (_tab);
 	}
@@ -188,16 +192,16 @@ public:
 		return (&(_tab[n]));
 	}
 	reference front(){
-		return (_tab[_size - 1]);
+		return (*_tab);
 	}
 	const_reference front() const{
-		return (_tab[_size - 1]);
+		return (*_tab);
 	}
 	reference back(){
-		return (*_tab);
+		return (_tab[_size - 1]);
 	}
 	const_reference back() const{
-		return (*_tab);
+		return (_tab[_size - 1]);
 	}
 	void resize (size_type n, value_type val = value_type()){
 		value_type	*tmp;
@@ -206,13 +210,13 @@ public:
 		tmp = _alloc.allocate(n);
 		for (; i < _size && i < n; i++) _alloc.construct(&tmp[i], _tab[i]);
 		for (; i < n ; i++) _alloc.construct(&tmp[i], val);
+		this->clear();
 		_capacity = n;
 		_size = n;
-		this->clear();
 		_tab = tmp;
 	}
 	template <class InputIterator>
-	void assign (InputIterator first, InputIterator last){
+	void assign (typename enable_if<!is_integral<InputIterator>::value, InputIterator>::type first, InputIterator last){
 		int i = 0;
 		this->clear();
 		_tab = _alloc.allocate(last - first);
@@ -223,12 +227,26 @@ public:
 		}
 	}
 	void assign (size_type n, const value_type& val){
-		int	i = 0;
+		size_type	i = 0;
+		
 		this->clear();
 		_tab = _alloc.allocate(n);
 		while (i < n){
 			_alloc.construct(&_tab[i], val);
 			i++;
+		}
+	}
+	void reserve (size_type n){
+		value_type	*tmp;
+		size_type	i = 0;
+		size_type	s_tmp = _size;
+
+		if (n > _capacity){
+			tmp = _alloc.allocate(n);
+			for (; i < _size ; i++) _alloc.construct(&tmp[i], _tab[i]);
+			this->clear();
+			_size = s_tmp;
+			_capacity = n;
 		}
 	}
 	reverse_iterator rbegin(){
@@ -254,8 +272,8 @@ public:
 		iterator	it(begin());
 		value_type	*ptr;
 		int			k = 0;
-		value_type	c;
-		value_type	s;
+		size_type	c;
+		size_type	s;
 
 		if (_capacity >= _size + 1){
 			for(; it != position ; it++);
@@ -310,9 +328,9 @@ public:
 		iterator	it(begin());
 		value_type	*ptr;
 		size_type	i = 0;
-		value_type	j = 0;
-		value_type	c = (_capacity + n) * 2;
-		value_type	s = _size + n;
+		size_type	j = 0;
+		size_type	c = (_capacity + n) * 2;
+		size_type	s = _size + n;
 
 		if (_capacity >= _size + n){
 			for(; it != position ; it++) j++;
@@ -340,7 +358,7 @@ public:
 		}
 		else {
 			ptr = _alloc.allocate(c);
-			for (; it != position ; it++)_alloc.construct(&ptr[i], *it);
+			for (; it != position ; it++){_alloc.construct(&ptr[i], *it); i++;};
 			while (n > 0){
 				_alloc.construct(&ptr[i], val);
 				n--;
@@ -357,75 +375,50 @@ public:
 			_capacity = c;
 		}
 	}
-	void reserve (size_type n){
-		value_type	*tmp;
-		int			i = 0;
-		size_type	s_tmp = _size;
+	template <class InputIterator>
+	void insert (iterator position, typename enable_if<!is_integral<InputIterator>::value, InputIterator>::type first, InputIterator last){
+		iterator	ite(end() - 1);
+		iterator	it(begin());
+		size_type	len = abs(first - last);
+		value_type	*ptr;
+		size_type	i = 0;
 
-		if (n > _capacity){
-			tmp = _alloc.allocate(n);
-			for (; i < _size ; i++) _alloc.construct(&tmp[i], _tab[i]);
+		if (_capacity >= _size + len){
+			i = _size + len - 1;
+			while (ite >= position){
+				_alloc.construct(&_tab[i], *ite);
+				ite--;
+				_alloc.destroy(&_tab[i - len]);
+				i--;
+			}
+			while (--last >= first){
+				_alloc.construct(&_tab[i], *last);
+				i--;
+			}
+			_size += len;
+		}
+		else {
+			size_type	c = (_capacity + len) * 2;
+			size_type	s = _size + len;
+
+			ptr = _alloc.allocate(c);
+			for (; it != position ; it++) {_alloc.construct(&ptr[i], *it); i++;};
+			while (first != last){
+				_alloc.construct(&ptr[i], *first);
+				first++;
+				i++;
+			}
+			while (it != ite){
+				_alloc.construct(&ptr[i], *it);
+				it++;
+				i++;
+			}
 			this->clear();
-			_size = s_tmp;
-			_capacity = n;
+			_tab = ptr;
+			_size = s;
+			_capacity = c;
 		}
 	}
-	// template <class InputIterator>
-	// void insert (iterator position, InputIterator first, InputIterator last){
-	// 	iterator	ite(end());
-	// 	iterator	it(begin());
-	// 	value_type	range = 0;
-	// 	value_type	*ptr;
-	// 	value_type	i = 0;
-	// 	value_type	j = 0;
-
-	// 	for (InputIterator i = first; i != last ; i++) range++;
-	// 	if (_capacity >= _size + range){
-	// 		for (; it != position ; it++) j++;
-	// 		ptr = _alloc.allocate(range);
-	// 		while (first != last && it != ite){
-	// 			_alloc.construct(&ptr[i], *it);
-	// 			*it = *first;
-	// 			first++;
-	// 			it++;
-	// 			j++;
-	// 		}
-	// 		while (first != last){
-	// 			_alloc.construct(&ptr[i], *it);
-	// 			_alloc.construct(&_tab[j], first);
-	// 			first++;
-	// 			it++;
-	// 			j++;
-	// 		}
-	// 		i = 0;
-	// 		while (i < range){
-	// 			_alloc.construct(&_tab[j], ptr[i]);
-	// 			i++;
-	// 			j++;
-	// 		}
-	// 	}
-	// 	else {
-	// 		value_type	c = (_capacity + range) * 2;
-	// 		value_type	s = _size + range;
-
-	// 		ptr = _alloc.allocate(c);
-	// 		for (; it != position ; it++) {_alloc.construct(&ptr[i], *it); i++;};
-	// 		while (first != last){
-	// 			_alloc.construct(&ptr[i], *first);
-	// 			first++;
-	// 			i++;
-	// 		}
-	// 		while (it != ite){
-	// 			_alloc.construct(&ptr[i], *it);
-	// 			it++;
-	// 			i++;
-	// 		}
-	// 		this->clear();
-	// 		_tab = ptr;
-	// 		_size = s;
-	// 		_capacity = c;
-	// 	}
-	// }
 };
 	template <class T, class Alloc>
 	void swap (vector<T,Alloc>& x, vector<T,Alloc>& y){
@@ -433,12 +426,12 @@ public:
 	}
 	template <class T, class Alloc>
 	bool operator==(const vector<T, Alloc>& left, const vector<T, Alloc>& right){
-		int	i = 0;
+		typename vector<T>::size_type	i = 0;
 		
-		if (left._size != right._size)
+		if (left.size() != right.size())
 			return (0);
-		while (i < right._size){
-			if (left._tab[i] != right._tab[i])
+		while (i < right.size()){
+			if (left[i] != right[i])
 				return (0);
 			i++;
 		}
@@ -446,12 +439,12 @@ public:
 	}
 	template <class T, class Alloc>
 	bool operator!=(const vector<T, Alloc>& left, const vector<T, Alloc>& right){
-		int	i = 0;
+		typename vector<T>::size_type	i = 0;
 
-		if (left._size != right._size)
+		if (left.size() != right.size())
 			return (1);
-		while (i < right._size){
-			if (left._tab[i] != right._tab[i])
+		while (i < right.size()){
+			if (left[i] != right[i])
 				return (1);
 			i++;
 		}
