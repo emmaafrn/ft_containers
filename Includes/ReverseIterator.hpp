@@ -32,7 +32,7 @@ public:
 		return (*this);
 	}
 	reverse_iterator	operator++(int){
-		reverse_iterator prev = this;
+		reverse_iterator prev = *this;
 
 		--it;
 		return (prev);

@@ -251,19 +251,19 @@ public:
 	}
 	reverse_iterator rbegin(){
 		reverse_iterator it(end());
-		return it;
+		return ++it;
 	}
 	const_reverse_iterator rbegin() const{
 		const_reverse_iterator it(end());
-		return it;
+		return ++it;
 	}
 	reverse_iterator rend(){
 		reverse_iterator it(begin());
-		return it;
+		return ++it;
 	}
 	const_reverse_iterator rend() const{
 		const_reverse_iterator it(begin());
-		return it;
+		return ++it;
 	}
 	iterator insert (iterator position, const value_type& val){
 		value_type	tmp;

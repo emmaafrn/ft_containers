@@ -106,16 +106,35 @@ void	insert_tests(){
 		std::cout << *it << std::endl;
 		it++;
 	}
+}
 
+void	iterators_tests(){
+	ft::vector<int>			vect;
+	
 
-
+	for (int i = 42; i < 46 ; i++) vect.push_back(i);
+	std::cout << "iterator\n";
+	for (ft::ptr_iterator<int> it = vect.begin(); it != vect.end(); it++) std::cout << *it << " ";
+	std::cout << std::endl;
+	std::cout << "reverse iterator\n";
+	// std::cout << "end = "<< *(vect.rend()) << std::endl;
+	for (ft::vector<int>::reverse_iterator rit = vect.rbegin() ; rit != vect.rend(); rit++) std::cout << *rit << " ";
+	std::cout << std::endl;
+	std::cout << "iterator\n";
+	for (ft::ptr_iterator<int> it = vect.begin(); it != vect.end(); it++) std::cout << *it << " ";
+	std::cout << std::endl;
+	ft::vector<int>			copy(vect);
+	for (ft::ptr_iterator<int> it = copy.begin(); it != copy.end(); it++) std::cout <<  *it << " ";
+	std::cout << std::endl;
+	
 }
 
 int	main(void){
 	// int	tab[4] = {0, 1, 2, 3};
 	
 	// test_after_swap();
-	insert_tests();
+	// insert_tests();
+	iterators_tests();
 
 	return (0);
 }
