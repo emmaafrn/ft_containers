@@ -69,11 +69,16 @@ public:
 		}
 	}
 
+	~vector(){
+		this->clear();
+	}
+
 	void	clear(){
-		if (_capacity > 0){
-			for (size_type i = _capacity - 1 ; i > 0; i--){
+		if (_size > 0){
+			for (size_type i = _size - 1 ; i > 0; i--){
 				_alloc.destroy(&_tab[i]);
 			}
+			_alloc.destroy(&_tab[0]);
 		}
 		if (_tab != NULL){
 			_alloc.deallocate(_tab, _size);
@@ -101,6 +106,7 @@ public:
 			_tab = tmp;
 		}
 		_alloc.construct(&(_tab[_size]), val);
+		(void)val;
 		_size++;
 	}
 
@@ -218,6 +224,7 @@ public:
 	template <class InputIterator>
 	void assign (typename enable_if<!is_integral<InputIterator>::value, InputIterator>::type first, InputIterator last){
 		int i = 0;
+
 		this->clear();
 		_tab = _alloc.allocate(last - first);
 		while (first != last){
@@ -225,6 +232,8 @@ public:
 			first++;
 			i++;
 		}
+		_size = i;
+		_capacity = i;
 	}
 	void assign (size_type n, const value_type& val){
 		size_type	i = 0;
@@ -235,6 +244,8 @@ public:
 			_alloc.construct(&_tab[i], val);
 			i++;
 		}
+		_size = i;
+		_capacity = i;
 	}
 	void reserve (size_type n){
 		value_type	*tmp;
@@ -247,6 +258,7 @@ public:
 			this->clear();
 			_size = s_tmp;
 			_capacity = n;
+			_tab = tmp;
 		}
 	}
 	reverse_iterator rbegin(){
@@ -266,105 +278,41 @@ public:
 		return ++it;
 	}
 	iterator insert (iterator position, const value_type& val){
-		value_type	tmp;
-		value_type	tmp_bis;
-		iterator	ite(end());
-		iterator	it(begin());
-		value_type	*ptr;
-		int			k = 0;
-		size_type	c;
-		size_type	s;
-
-		if (_capacity >= _size + 1){
-			for(; it != position ; it++);
-			tmp = *it;
-			*it = val;
-			it++;
-			while (it != ite){
-				tmp_bis = *it;
-				*it = tmp;
-				k = 1;
-				it++;
-				if (it != ite){
-					tmp = *it;
-					*it = tmp_bis;
-					k = 2;
-					it++;
-				}
-			}
-			if (k == 2){
-				_alloc.construct(&_tab[_size], tmp);
-				_size++;
-			}
-			if (k == 1){
-				_alloc.construct(&_tab[_size], tmp_bis);
-				_size++;
-			}
-		}
-		else {
-			ptr = _alloc.allocate((_capacity * 2) + 1);
-			for (; it != position ; it++){_alloc.construct(&ptr[k], *it); k++;};
-			_alloc.construct(&ptr[k], val);
-			it++;
-			k++;
-			while (it != ite){
-				_alloc.construct(&ptr[k], *(it - 1));
-				k++;
-				it++;
-			}
-			if (it == ite)
-				_alloc.construct(&ptr[k], *(it - 1));
-			s = k + 1;
-			c = (_capacity * 2) + 1;
-			this->clear();
-			_tab = ptr;
-			_size = s;
-			_capacity = c;
-		}
+		insert(position, 1, val);
 		return (begin());
 	}
 	void insert (iterator position, size_type n, const value_type& val){
-		iterator	ite(end());
+		iterator	ite(end() - 1);
 		iterator	it(begin());
 		value_type	*ptr;
 		size_type	i = 0;
-		size_type	j = 0;
 		size_type	c = (_capacity + n) * 2;
 		size_type	s = _size + n;
 
 		if (_capacity >= _size + n){
-			for(; it != position ; it++) j++;
-			ptr = _alloc.allocate(n);
-			while (it != ite && i != n){
-				_alloc.construct(&ptr[i], *it);
-				*it = val;
-				it++;
-				i++;
-				j++;
+			i = _size + n - 1;
+			while (ite >= position){
+				_alloc.construct(&_tab[i], *ite);
+				ite--;
+				_alloc.destroy(&_tab[i - n]);
+				i--;
 			}
-			while (i != n){
-				_alloc.construct(&ptr[i], *it);
-				_alloc.construct(&_tab[j], val);
-				it++;
-				i++;
-				j++;
+			while (n > 0){
+				_alloc.construct(&_tab[i], val);
+				i--;
+				n--;
 			}
-			i = 0;
-			while (i < n){
-				_alloc.construct(&_tab[j], ptr[i]);
-				i++;
-				j++;
-			}
+			_size = s;
 		}
 		else {
 			ptr = _alloc.allocate(c);
-			for (; it != position ; it++){_alloc.construct(&ptr[i], *it); i++;};
+			for (; it != position ; it++){ _alloc.construct(&ptr[i], *it); i++;};
 			while (n > 0){
 				_alloc.construct(&ptr[i], val);
 				n--;
 				i++;
 			}
-			while (it != ite){
+			while (it <= ite){
 				_alloc.construct(&ptr[i], *it);
 				it++;
 				i++;

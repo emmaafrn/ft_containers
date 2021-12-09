@@ -2,6 +2,7 @@
 #include "Includes/vector.hpp"
 #include <iostream>
 
+
 void	test_after_swap(){
 	std::allocator<int> alloc;
 	ft::vector<int> a(5, 42, alloc);
@@ -130,11 +131,10 @@ void	iterators_tests(){
 }
 
 int	main(void){
-	// int	tab[4] = {0, 1, 2, 3};
-	
 	// test_after_swap();
 	// insert_tests();
-	iterators_tests();
+	// iterators_tests();
+
 
 	return (0);
 }
