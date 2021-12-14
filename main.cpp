@@ -1,5 +1,6 @@
 #include "Includes/Iterator.hpp"
 #include "Includes/vector.hpp"
+#include "Includes/stack.hpp"
 #include <iostream>
 
 
@@ -130,11 +131,23 @@ void	iterators_tests(){
 	
 }
 
+
+
+
 int	main(void){
+	// VECTOR
 	// test_after_swap();
 	// insert_tests();
 	// iterators_tests();
 
+	//STACK
+	ft::vector<int> v;
+
+	for (int i = 42; i < 46 ; i++) v.push_back(i);
+
+	ft::stack<int> s(v);
+
+	std::cout << "stack's top = " << s.top() << std::endl;
 
 	return (0);
 }
