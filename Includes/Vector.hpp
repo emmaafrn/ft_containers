@@ -106,7 +106,6 @@ public:
 			_tab = tmp;
 		}
 		_alloc.construct(&(_tab[_size]), val);
-		(void)val;
 		_size++;
 	}
 
@@ -147,9 +146,7 @@ public:
 	}
 
 	bool empty() const{
-		if (_size == 0)
-			return (1);
-		return (0);
+		return _size == 0;
 	}
 
 	vector& operator=(const vector& x){
