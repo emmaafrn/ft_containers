@@ -48,9 +48,7 @@ public:
 	vector (typename enable_if<!is_integral<InputIterator>::value, InputIterator>::type first, InputIterator last, const allocator_type& alloc = allocator_type()) : _alloc(alloc), _size(0){
 		size_type	i = 0;
 		
-		for (size_type j = 0 ; j < size_type(last - first) ; j++){
-			_size++;
-		}
+		_size = last - first;
 		_tab = _alloc.allocate(_size);
 		while (i < _size){
 			_alloc.construct(&_tab[i], *first);
