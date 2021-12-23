@@ -1,6 +1,7 @@
 #include "Includes/Iterator.hpp"
 #include "Includes/vector.hpp"
 #include "Includes/stack.hpp"
+#include "Includes/map.hpp"
 #include <iostream>
 
 
@@ -141,13 +142,18 @@ int	main(void){
 	// iterators_tests();
 
 	//STACK
-	ft::vector<int> v;
+	// ft::vector<int> v;
 
-	for (int i = 42; i < 46 ; i++) v.push_back(i);
+	// for (int i = 42; i < 46 ; i++) v.push_back(i);
 
-	ft::stack<int> s(v);
+	// ft::stack<int> s(v);
 
-	std::cout << "stack's top = " << s.top() << std::endl;
+	// std::cout << "stack's top = " << s.top() << std::endl;
+
+	//MAP
+	ft::map<int, int> mamap;
+
+	
 
 	return (0);
 }
