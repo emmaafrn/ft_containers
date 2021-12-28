@@ -4,18 +4,22 @@
 #include <memory>
 #include <iostream>
 #include "pair.hpp"
+#include "map_iterator.hpp"
 
 template<class T>
 struct node{
-	node	*left;
-	node	*right;
-	node	*parent;
-	T		*content;
+	typedef		value_type	T;
+	node		*left;
+	node		*right;
+	node		*parent;
+	value_type	*content;
 
-	node(){
+	node() : content(NULL), left(NULL), right(NULL), parent(NULL){}
+	set_parent(node *previous) : parent(previous){}
+	
 
-	}
 };
+
 template <	class Key,                                     // map::key_type
 			class T,                                       // map::mapped_type
 			class Compare = std::less<Key>,                     // map::key_compare
@@ -65,22 +69,21 @@ public:
 	node<T>		getNode(){
 		return (_node);
 	}
-	ft::pair<iterator,bool> insert(node<T> **node, key_type key, mapped_type val){
+	ft::pair<iterator,bool> insert(node<T> **node, key_type key, mapped_type val, node<T> *previous){
 		if (*node == NULL){
 			*node = n_alloc.allocate();
-			n_alloc.construct((*node), ); // ADD NODE'S CONSTRUCT
-			alloc.construct((*node)->content, key, val);
-
+			n_alloc.construct(*node); // ADD NODE'S CONSTRUCT
+			alloc.construct((*node)->content, key, val); // PAIR'S CONSTRUCT
+			(*node)->set_parent(previous);
 		}
 		else {
 			if (comp((*node)->content->first, key))
-				insert(&(*node)->left), key, val);
+				insert(&(*node)->left), key, val, *node);
 			else if (comp(key, (*node)->content->first))
-				insert(&(*node->right), key, val);
+				insert(&(*node->right), key, val, *node);
 			else
-				return (ft::pair<NULL, 0>); //ADD ITERATOR
+				return (ft::pair<ft::iterator(*node), 0>); //ADD ITERATOR
 		}
-		
 	}
 };
 
@@ -92,6 +95,7 @@ template <	class Key,                                     // map::key_type
 			class Alloc = std::allocator<ft::pair<const Key,T> > >    // map::allocator_type
 class map{
 public:
+	class iterator;
 	typedef Key								 					key_type;
 	typedef T								 					mapped_type;
 	typedef ft::pair<const key_type, mapped_type> 				value_type;
