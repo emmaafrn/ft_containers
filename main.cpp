@@ -2,6 +2,7 @@
 #include "Includes/vector.hpp"
 #include "Includes/stack.hpp"
 #include "Includes/map.hpp"
+#include "Includes/pair.hpp"
 #include <iostream>
 
 
@@ -153,7 +154,9 @@ int	main(void){
 	//MAP
 	ft::map<int, int> mamap;
 
-	
+	for(int i = 0; i < 10; i++){
+		mamap.insert(ft::make_pair(i, i+1));
+	}
 
 	return (0);
 }

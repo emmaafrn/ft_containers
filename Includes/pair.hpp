@@ -10,8 +10,8 @@ struct pair{
 	typedef T1	first_type;
 	typedef T2	second_type;
 
-	T1		first;
-	T2		second;
+	first_type		first;
+	second_type		second;
 	pair() : first(NULL), second(NULL){};
 	template<class U, class V>
 	pair (const pair<U,V>& pr) : first(pr.first), second(pr.second){};
