@@ -15,7 +15,7 @@ namespace	ft{
 		Node		*parent;
 		value_type	*content;
 
-		Node() : content(NULL), left(NULL), right(NULL), parent(NULL){}
+		Node() : left(NULL), right(NULL), parent(NULL), content(NULL){}
 		void	set_parent(Node *previous){
 			parent = previous;
 		}	
@@ -30,21 +30,21 @@ namespace	ft{
 	public :
 	typedef Key								 					key_type;
 	typedef T								 					mapped_type;
-	typedef	Node<T>												node;
-	typedef	node*												node_ptr;
 	typedef ft::pair<const key_type, mapped_type> 				value_type;
+	typedef	Node<value_type>									node;
+	typedef	node*												node_ptr;
 	typedef Compare												key_compare;
 	typedef Allocator											allocator_type;
-	typedef typename allocator_type::reference				reference;
-	typedef typename allocator_type::const_reference 		const_reference;
-	typedef typename allocator_type::pointer         		pointer;
-	typedef typename allocator_type::const_pointer   		const_pointer;
-	typedef typename allocator_type::size_type       		size_type;
-	typedef typename allocator_type::difference_type 		difference_type;
-	typedef ft::iterator<T>									iterator;
-	typedef const ft::iterator<T>							const_iterator;
-	typedef std::reverse_iterator<iterator>					reverse_iterator;
-	typedef std::reverse_iterator<const_iterator>			const_reverse_iterator;
+	typedef typename allocator_type::reference					reference;
+	typedef typename allocator_type::const_reference 			const_reference;
+	typedef typename allocator_type::pointer         			pointer;
+	typedef typename allocator_type::const_pointer   			const_pointer;
+	typedef typename allocator_type::size_type       			size_type;
+	typedef typename allocator_type::difference_type 			difference_type;
+	typedef ft::iterator<node>										iterator;
+	typedef const ft::iterator<node>								const_iterator;
+	typedef std::reverse_iterator<iterator>						reverse_iterator;
+	typedef std::reverse_iterator<const_iterator>				const_reverse_iterator;
 	typedef typename Allocator::template rebind<node>::other	n_Allocator;
 	private:
 		node_ptr		_node;
@@ -53,28 +53,30 @@ namespace	ft{
 		n_Allocator		n_alloc;
 
 	public:
-		bst(allocator_type alloc, key_compare comp) : _alloc(alloc), _comp(comp), _node(NULL), n_alloc(){}
+		bst(allocator_type alloc, key_compare comp) : _node(NULL), _alloc(alloc), _comp(comp), n_alloc(){}
 		// template <class InputIterator>
 		// bst(InputIterator first, InputIterator last){
 			
 		// }
-		node	getNode(){
-			return (_node);
+		node	**getNode(){
+			return (&_node);
 		}
 		ft::pair<iterator,bool> insert(node **node, key_type key, mapped_type val, node_ptr previous){
 			if (*node == NULL){
-				*node = n_alloc.allocate();
+				*node = n_alloc.allocate(1);
 				n_alloc.construct(*node); // ADD NODE'S CONSTRUCT
-				_alloc.construct((*node)->content, key, val); // PAIR'S CONSTRUCT
+				(*node)->content = _alloc.allocate(1);
+				_alloc.construct((*node)->content, make_pair(key, val)); // PAIR'S CONSTRUCT
 				(*node)->set_parent(previous);
+				return (make_pair(iterator(*node), true));
 			}
 			else {
-				if (comp((*node)->content->first, key))
-					insert((&(*node)->left), key, val, *node);
-				else if (comp(key, (*node)->content->first))
-					insert(&(*node->right), key, val, *node);
+				if (_comp((*node)->content->first, key))
+					return insert((&((*node)->left)), key, val, *node);
+				else if (_comp(key, (*node)->content->first))
+					return insert(&(((*node)->right)), key, val, *node);
 				else
-					return (make_pair(*node, false)); //ADD ITERATOR
+					return (make_pair(iterator(*node), false)); //ADD ITERATOR
 			}
 		}
 	};  
@@ -97,8 +99,8 @@ namespace	ft{
 		typedef typename allocator_type::size_type       		size_type;
 		typedef typename allocator_type::difference_type 		difference_type;
 
-		typedef ft::iterator<T>									iterator;
-		typedef const ft::iterator<T>							const_iterator;
+		typedef ft::iterator<typename bst<key_type, T, Compare, Allocator>::node>			iterator;
+		typedef ft::iterator<const typename bst<key_type, T, Compare, Allocator>::node>							const_iterator;
 		typedef std::reverse_iterator<iterator>					reverse_iterator;
 		typedef std::reverse_iterator<const_iterator>			const_reverse_iterator;
 
@@ -109,9 +111,8 @@ namespace	ft{
 		size_type												_size;
 
 	public :
-	explicit map (const key_compare& comp = key_compare(), const allocator_type& alloc = allocator_type()) : _comp(comp), _alloc(alloc), _bst(NULL){
-		_bst(_alloc, _comp);
-	}
+	explicit map (const key_compare& comp = key_compare(), const allocator_type& alloc = allocator_type()) : _bst(alloc, comp), _comp(comp), _alloc(alloc){}
+
 	// template <class InputIterator>
 	// map (InputIterator first, InputIterator last, const key_compare& comp = key_compare(), const allocator_type& alloc = allocator_type()) : _comp(comp), _alloc(alloc){
 	// 	_bst(_alloc, _comp);
@@ -120,10 +121,10 @@ namespace	ft{
 	// 	_bst(_alloc, _comp);
 	// }
 	ft::pair<iterator,bool>	insert (const value_type& val){
-		_bst.insert(_bst.getNode(), val.first, val.second, NULL);
+		return (_bst.insert(_bst.getNode(), val.first, val.second, NULL));
 	}
 	iterator insert (iterator position, const value_type& val){
-		_bst.insert(position, val.first, val.second, NULL);
+		return (_bst.insert(position, val.first, val.second, NULL).first);
 	}
 	// template <class InputIterator>
 	// void insert (InputIterator first, InputIterator last){
