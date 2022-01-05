@@ -112,7 +112,7 @@ void	insert_tests(){
 	}
 }
 
-void	iterators_tests(){
+void	iterators_tests() {
 	ft::vector<int>			vect;
 	
 
@@ -133,10 +133,7 @@ void	iterators_tests(){
 	
 }
 
-
-
-
-int	main(void){
+int	main(void) {
 	// VECTOR
 	// test_after_swap();
 	// insert_tests();

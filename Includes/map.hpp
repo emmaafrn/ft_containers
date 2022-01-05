@@ -6,20 +6,21 @@
 #include "pair.hpp"
 #include "map_iterator.hpp"
 
+# define RED 0
+# define BLACK 1
+
+
 namespace	ft{
 	template<class T>
 	struct Node{
 		typedef		T		value_type;
-		Node		*left;
-		Node		*right;
+		Node		*child[2];
 		Node		*parent;
 		value_type	*content;
+		bool		color;
 
-		Node() : left(NULL), right(NULL), parent(NULL), content(NULL){}
-		void	set_parent(Node *previous){
-			parent = previous;
-		}	
-
+		Node() : child{NULL, NULL}, parent(NULL), content(NULL), color(BLACK){}
+		Node(Node &copy) : child{copy->child[0], copy->child[1]}, parent(copy->parent), content(copy->content), color(copy->color){}
 	};
 
 	template <	class Key,                                     // map::key_type
@@ -41,11 +42,12 @@ namespace	ft{
 	typedef typename allocator_type::const_pointer   			const_pointer;
 	typedef typename allocator_type::size_type       			size_type;
 	typedef typename allocator_type::difference_type 			difference_type;
-	typedef ft::iterator<node>										iterator;
-	typedef const ft::iterator<node>								const_iterator;
+	typedef ft::iterator<node>									iterator;
+	typedef const ft::iterator<node>							const_iterator;
 	typedef std::reverse_iterator<iterator>						reverse_iterator;
 	typedef std::reverse_iterator<const_iterator>				const_reverse_iterator;
 	typedef typename Allocator::template rebind<node>::other	n_Allocator;
+
 	private:
 		node_ptr		_node;
 		allocator_type	_alloc;
@@ -61,20 +63,101 @@ namespace	ft{
 		node	**getNode(){
 			return (&_node);
 		}
+
+		node_ptr	get_grand_parent(node_ptr node){
+			if (get_parent(node) == NULL)
+				return (NULL);
+			return (node->parent->parent);
+		}
+
+		node_ptr	get_parent(node_ptr node){
+			return (node->parent);
+		}
+
+		node_ptr	get_uncle(node_ptr node){
+			if (get_grand_parent(node) == NULL)
+				return (NULL);
+			return (get_brother(get_parent(node)));
+		}
+
+		node_ptr	get_brother(node_ptr node){
+			node_ptr parent = get_parent(node);
+
+			if (parent == NULL)
+				return (NULL);
+			if (node == parent->child[0])
+				return (parent->child[1]);
+			return (parent->child[0]);
+		}
+
+		node_ptr	rotate(node *root, int dir){
+			node	*pivot;
+			node	*tmp;
+			
+			pivot = root->child[1 - dir];
+			root->child[1 - dir] = pivot->child[dir];
+			pivot->child[dir] = root;
+			tmp = root->parent;
+			root->parent = pivot;
+			pivot->parent = tmp;
+			return (pivot);
+		}
+
+		void	insertion_case1(node_ptr node){ // si le noeud inséré est à la racine
+			if (get_parent(node) == NULL)
+				node->color = BLACK;
+		}
+		void	insertion_case2(node_ptr node){ // si le parent du noeud inséré est rouge
+			get_parent(node)->color = BLACK;
+			get_uncle(node)->color = BLACK;
+
+			node_ptr gp;
+			gp = get_grand_parent(node);
+			gp->color = RED;
+			// PUIS RE CHECKER SI BESOIN DE REPARATIONS A PARTIR DE GP CETTE FOIS_CI
+		}
+		void	insertion_case3(node_ptr node){ // si l'oncle est noir
+			node_ptr	p = get_parent(node);
+			node_ptr	gp = get_grand_parent(node);
+
+			if (node == gp->child[0]->child[1]) {
+				rotation(p, 0);
+				node = node->child[0];
+			}
+			else if (node == gp->child[1]->child[0]) {
+				rotation(p, 1);
+				node = node->child[1]; 
+			}
+			insertion_case4(node);
+		}
+		void	insertion_case4(node_ptr node){ // Le parent vient prendre la place du grand-parent, et le grand-parent celle de l'oncle.
+												// Le parent devient noir et le grand-parent rouge
+				struct noeud *p = parent(node);
+				struct noeud *gp = grandparent(node);
+
+				if (node == p->child[0])
+					rotate(gp, 1);
+				else
+					rotate(gp, 0);
+				p->color = BLACK;
+				gp->color = RED;
+		}
+
 		ft::pair<iterator,bool> insert(node **node, key_type key, mapped_type val, node_ptr previous){
 			if (*node == NULL){
 				*node = n_alloc.allocate(1);
 				n_alloc.construct(*node); // ADD NODE'S CONSTRUCT
 				(*node)->content = _alloc.allocate(1);
 				_alloc.construct((*node)->content, make_pair(key, val)); // PAIR'S CONSTRUCT
-				(*node)->set_parent(previous);
+				(*node)->parent = previous;
+				(*node)->color = RED;
 				return (make_pair(iterator(*node), true));
 			}
 			else {
 				if (_comp((*node)->content->first, key))
-					return insert((&((*node)->left)), key, val, *node);
+					return insert((&((*node)->child[0])), key, val, *node);
 				else if (_comp(key, (*node)->content->first))
-					return insert(&(((*node)->right)), key, val, *node);
+					return insert(&(((*node)->child[1])), key, val, *node);
 				else
 					return (make_pair(iterator(*node), false)); //ADD ITERATOR
 			}
@@ -100,9 +183,9 @@ namespace	ft{
 		typedef typename allocator_type::difference_type 		difference_type;
 
 		typedef ft::iterator<typename bst<key_type, T, Compare, Allocator>::node>			iterator;
-		typedef ft::iterator<const typename bst<key_type, T, Compare, Allocator>::node>							const_iterator;
-		typedef std::reverse_iterator<iterator>					reverse_iterator;
-		typedef std::reverse_iterator<const_iterator>			const_reverse_iterator;
+		typedef ft::iterator<const typename bst<key_type, T, Compare, Allocator>::node>		const_iterator;
+		typedef std::reverse_iterator<iterator>												reverse_iterator;
+		typedef std::reverse_iterator<const_iterator>										const_reverse_iterator;
 
 	private:
 		bst<key_type, T, Compare, Allocator>					_bst;
@@ -111,7 +194,11 @@ namespace	ft{
 		size_type												_size;
 
 	public :
-	explicit map (const key_compare& comp = key_compare(), const allocator_type& alloc = allocator_type()) : _bst(alloc, comp), _comp(comp), _alloc(alloc){}
+	explicit map (const key_compare& comp = key_compare(), const allocator_type& alloc = allocator_type()) 
+		: _bst(alloc, comp)
+		, _comp(comp)
+		, _alloc(alloc)
+	{}
 
 	// template <class InputIterator>
 	// map (InputIterator first, InputIterator last, const key_compare& comp = key_compare(), const allocator_type& alloc = allocator_type()) : _comp(comp), _alloc(alloc){
