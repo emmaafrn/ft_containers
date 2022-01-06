@@ -8,6 +8,8 @@
 
 # define RED 0
 # define BLACK 1
+# define GAUCHE 0
+# define DROITE 1
 
 
 namespace	ft{
@@ -19,8 +21,14 @@ namespace	ft{
 		value_type	*content;
 		bool		color;
 
-		Node() : child{NULL, NULL}, parent(NULL), content(NULL), color(BLACK){}
-		Node(Node &copy) : child{copy->child[0], copy->child[1]}, parent(copy->parent), content(copy->content), color(copy->color){}
+		Node() : parent(NULL), content(NULL), color(BLACK){
+			child[GAUCHE] = NULL;
+			child[DROITE] = NULL;
+		}
+		Node(Node &copy) : parent(copy->parent), content(copy->content), color(copy->color){
+			child[GAUCHE] = copy->child[GAUCHE];
+			child[DROITE] = copy->child[DROITE];
+		}
 	};
 
 	template <	class Key,                                     // map::key_type
@@ -63,37 +71,32 @@ namespace	ft{
 		node	**getNode(){
 			return (&_node);
 		}
-
 		node_ptr	get_grand_parent(node_ptr node){
 			if (get_parent(node) == NULL)
 				return (NULL);
 			return (node->parent->parent);
 		}
-
 		node_ptr	get_parent(node_ptr node){
 			return (node->parent);
 		}
-
 		node_ptr	get_uncle(node_ptr node){
 			if (get_grand_parent(node) == NULL)
 				return (NULL);
 			return (get_brother(get_parent(node)));
 		}
-
 		node_ptr	get_brother(node_ptr node){
 			node_ptr parent = get_parent(node);
 
 			if (parent == NULL)
 				return (NULL);
-			if (node == parent->child[0])
-				return (parent->child[1]);
-			return (parent->child[0]);
+			if (node == parent->child[GAUCHE])
+				return (parent->child[DROITE]);
+			return (parent->child[GAUCHE]);
 		}
-
 		node_ptr	rotate(node *root, int dir){
 			node	*pivot;
 			node	*tmp;
-			
+
 			pivot = root->child[1 - dir];
 			root->child[1 - dir] = pivot->child[dir];
 			pivot->child[dir] = root;
@@ -102,47 +105,63 @@ namespace	ft{
 			pivot->parent = tmp;
 			return (pivot);
 		}
+		void	insertion_repare(node_ptr node){
+			node_ptr	parent = get_parent(node);
+			
+			if (parent == NULL)
+				insertion_case1(node);
+			else if (parent && parent->color == RED)
+				insertion_case2(node);
+			else if (parent && get_uncle(node) && get_uncle(node)->color == BLACK)
+				insertion_case3(node);
+			else
+				insertion_case4(node);
 
+		}
 		void	insertion_case1(node_ptr node){ // si le noeud inséré est à la racine
-			if (get_parent(node) == NULL)
-				node->color = BLACK;
+			// std::cout << "CASE 1\n";
+			node->color = BLACK;
 		}
 		void	insertion_case2(node_ptr node){ // si le parent du noeud inséré est rouge
+			// std::cout << "CASE 2\n";
 			get_parent(node)->color = BLACK;
 			get_uncle(node)->color = BLACK;
 
 			node_ptr gp;
 			gp = get_grand_parent(node);
 			gp->color = RED;
-			// PUIS RE CHECKER SI BESOIN DE REPARATIONS A PARTIR DE GP CETTE FOIS_CI
+			insertion_repare(gp);
 		}
 		void	insertion_case3(node_ptr node){ // si l'oncle est noir
+			// std::cout << "CASE 3\n";
 			node_ptr	p = get_parent(node);
 			node_ptr	gp = get_grand_parent(node);
 
-			if (node == gp->child[0]->child[1]) {
-				rotation(p, 0);
-				node = node->child[0];
+			if (node == gp->child[GAUCHE]->child[DROITE]) {
+				rotate(p, GAUCHE);
+				node = node->child[GAUCHE];
 			}
-			else if (node == gp->child[1]->child[0]) {
-				rotation(p, 1);
-				node = node->child[1]; 
+			else if (node == gp->child[DROITE]->child[GAUCHE]) {
+				rotate(p, DROITE);
+				node = node->child[DROITE]; 
 			}
 			insertion_case4(node);
 		}
 		void	insertion_case4(node_ptr node){ // Le parent vient prendre la place du grand-parent, et le grand-parent celle de l'oncle.
 												// Le parent devient noir et le grand-parent rouge
-				struct noeud *p = parent(node);
-				struct noeud *gp = grandparent(node);
+				// std::cout << "CASE 4\n";
+				node_ptr	p = get_parent(node);
+				node_ptr	gp = get_grand_parent(node);
 
-				if (node == p->child[0])
-					rotate(gp, 1);
+				if (p == NULL || gp == NULL)
+					return ;
+				if (node == p->child[GAUCHE])
+					rotate(gp, DROITE);
 				else
-					rotate(gp, 0);
+					rotate(gp, GAUCHE);
 				p->color = BLACK;
 				gp->color = RED;
 		}
-
 		ft::pair<iterator,bool> insert(node **node, key_type key, mapped_type val, node_ptr previous){
 			if (*node == NULL){
 				*node = n_alloc.allocate(1);
@@ -151,18 +170,21 @@ namespace	ft{
 				_alloc.construct((*node)->content, make_pair(key, val)); // PAIR'S CONSTRUCT
 				(*node)->parent = previous;
 				(*node)->color = RED;
+				(*node)->child[GAUCHE] = NULL;
+				(*node)->child[DROITE] = NULL;
+				insertion_repare(*node);
 				return (make_pair(iterator(*node), true));
 			}
 			else {
 				if (_comp((*node)->content->first, key))
-					return insert((&((*node)->child[0])), key, val, *node);
+					return insert((&((*node)->child[GAUCHE])), key, val, *node);
 				else if (_comp(key, (*node)->content->first))
-					return insert(&(((*node)->child[1])), key, val, *node);
+					return insert(&(((*node)->child[DROITE])), key, val, *node);
 				else
 					return (make_pair(iterator(*node), false)); //ADD ITERATOR
 			}
 		}
-	};  
+	};
 
 	template <	class Key,                                     // map::key_type
 				class T,                                       // map::mapped_type

@@ -151,9 +151,9 @@ int	main(void) {
 	//MAP
 	ft::map<int, int> mamap;
 
-	for(int i = 0; i < 10; i++){
-		mamap.insert(ft::make_pair(i, i+1));
-	}
+	mamap.insert(ft::make_pair(5, 7));
+	mamap.insert(ft::make_pair(3, 6));
+	mamap.insert(ft::make_pair(6, 8));
 
 	return (0);
 }
