@@ -4,6 +4,9 @@
 #include "map.hpp"
 #include "pair.hpp"
 
+# define LEFT 0
+# define RIGHT 1
+
 namespace	ft{
 	template <class T>
 	class iterator{
@@ -36,7 +39,21 @@ namespace	ft{
 		pointer	operator->(void) const{
 			return(_node);
 		}
-		
+		pointer	operator++(void) const{
+			if (_node->child[RIGHT]){
+				_node = _node->child[RIGHT];
+				while (_node->child[LEFT]){
+					_node = _node->child[LEFT];
+				}
+			}
+			else {
+				while (!_node->child[LEFT] && !_node->child[RIGHT] && _node->parent && _node->parent->child[RIGHT] == _node){
+					_node = _node->parent;
+				}
+				_node = _node->parent;
+			}
+			return (_node->content);
+		}
 	};
 	
 	

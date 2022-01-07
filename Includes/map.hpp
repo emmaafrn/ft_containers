@@ -8,8 +8,8 @@
 
 # define RED 0
 # define BLACK 1
-# define GAUCHE 0
-# define DROITE 1
+# define LEFT 0
+# define RIGHT 1
 
 
 namespace	ft{
@@ -22,12 +22,12 @@ namespace	ft{
 		bool		color;
 
 		Node() : parent(NULL), content(NULL), color(BLACK){
-			child[GAUCHE] = NULL;
-			child[DROITE] = NULL;
+			child[LEFT] = NULL;
+			child[RIGHT] = NULL;
 		}
 		Node(Node &copy) : parent(copy->parent), content(copy->content), color(copy->color){
-			child[GAUCHE] = copy->child[GAUCHE];
-			child[DROITE] = copy->child[DROITE];
+			child[LEFT] = copy->child[LEFT];
+			child[RIGHT] = copy->child[RIGHT];
 		}
 	};
 
@@ -57,19 +57,20 @@ namespace	ft{
 	typedef typename Allocator::template rebind<node>::other	n_Allocator;
 
 	private:
-		node_ptr		_node;
+		node_ptr		_root;
 		allocator_type	_alloc;
 		key_compare		_comp;
 		n_Allocator		n_alloc;
+		size_type		_size;
 
 	public:
-		bst(allocator_type alloc, key_compare comp) : _node(NULL), _alloc(alloc), _comp(comp), n_alloc(){}
+		bst(allocator_type alloc, key_compare comp) : _root(NULL), _alloc(alloc), _comp(comp), n_alloc(), _size(0){}
 		// template <class InputIterator>
 		// bst(InputIterator first, InputIterator last){
 			
 		// }
-		node	**getNode(){
-			return (&_node);
+		node	**getRoot(){
+			return (&_root);
 		}
 		node_ptr	get_grand_parent(node_ptr node){
 			if (get_parent(node) == NULL)
@@ -89,9 +90,9 @@ namespace	ft{
 
 			if (parent == NULL)
 				return (NULL);
-			if (node == parent->child[GAUCHE])
-				return (parent->child[DROITE]);
-			return (parent->child[GAUCHE]);
+			if (node == parent->child[LEFT])
+				return (parent->child[RIGHT]);
+			return (parent->child[LEFT]);
 		}
 		node_ptr	rotate(node *root, int dir){
 			node	*pivot;
@@ -137,13 +138,13 @@ namespace	ft{
 			node_ptr	p = get_parent(node);
 			node_ptr	gp = get_grand_parent(node);
 
-			if (node == gp->child[GAUCHE]->child[DROITE]) {
-				rotate(p, GAUCHE);
-				node = node->child[GAUCHE];
+			if (node == gp->child[LEFT]->child[RIGHT]) {
+				rotate(p, LEFT);
+				node = node->child[LEFT];
 			}
-			else if (node == gp->child[DROITE]->child[GAUCHE]) {
-				rotate(p, DROITE);
-				node = node->child[DROITE]; 
+			else if (node == gp->child[RIGHT]->child[LEFT]) {
+				rotate(p, RIGHT);
+				node = node->child[RIGHT]; 
 			}
 			insertion_case4(node);
 		}
@@ -155,10 +156,10 @@ namespace	ft{
 
 				if (p == NULL || gp == NULL)
 					return ;
-				if (node == p->child[GAUCHE])
-					rotate(gp, DROITE);
+				if (node == p->child[LEFT])
+					rotate(gp, RIGHT);
 				else
-					rotate(gp, GAUCHE);
+					rotate(gp, LEFT);
 				p->color = BLACK;
 				gp->color = RED;
 		}
@@ -170,19 +171,105 @@ namespace	ft{
 				_alloc.construct((*node)->content, make_pair(key, val)); // PAIR'S CONSTRUCT
 				(*node)->parent = previous;
 				(*node)->color = RED;
-				(*node)->child[GAUCHE] = NULL;
-				(*node)->child[DROITE] = NULL;
+				(*node)->child[LEFT] = NULL;
+				(*node)->child[RIGHT] = NULL;
+				_size++;
 				insertion_repare(*node);
 				return (make_pair(iterator(*node), true));
 			}
 			else {
 				if (_comp((*node)->content->first, key))
-					return insert((&((*node)->child[GAUCHE])), key, val, *node);
+					return insert((&((*node)->child[LEFT])), key, val, *node);
 				else if (_comp(key, (*node)->content->first))
-					return insert(&(((*node)->child[DROITE])), key, val, *node);
+					return insert(&(((*node)->child[RIGHT])), key, val, *node);
 				else
-					return (make_pair(iterator(*node), false)); //ADD ITERATOR
+					return (make_pair(iterator(*node), false));
 			}
+		}
+		iterator begin(){
+			node_ptr begin = _root;
+
+			while (begin && begin->child[LEFT])
+				begin = begin->child[LEFT];
+			return (begin->content);
+		}
+		const_iterator begin() const{
+			node_ptr begin = _root;
+
+			while (begin && begin->child[LEFT])
+				begin = begin->child[LEFT];
+			return (begin->content);
+		}
+		iterator end(){
+
+		}
+		const_iterator end() const{
+
+		}
+		bool empty() const{
+			if (!_root->content && !root->child[LEFT] && !root->child[RIGHT])
+				return (1);
+			return (0);
+		}
+		size_type size() const{
+			return (_size);
+		}
+		size_type max_size() const{
+			return (_alloc.max_size());
+		}
+		iterator find (const key_type& k){
+			node_ptr	tmp = _root;
+
+			while (tmp){
+				if (_comp(tmp->content->first, k))
+					tmp = tmp->child[RIGHT];
+				else if (_comp(k, tmp->content->first))
+					tmp = tmp->child[LEFT];
+				else
+					return (iterator(tmp->content));
+			}
+			return (end());
+		}
+		const_iterator find (const key_type& k) const{
+			node_ptr	tmp = _root;
+
+			while (tmp){
+				if (_comp(tmp->content->first, k))
+					tmp = tmp->child[RIGHT];
+				else if (_comp(k, tmp->content->first))
+					tmp = tmp->child[LEFT];
+				else
+					return (const_iterator(tmp->content));
+			}
+			return (end());
+		}
+		mapped_type& operator[] (const key_type& k){
+			iterator	it = find(k);
+			
+			if (it != end()){
+				return ();
+			}
+		}
+		void swap (map& x){
+
+		}
+		void clear(){
+
+		}
+		key_compare key_comp() const{
+
+		}
+		value_compare value_comp() const{
+
+		}
+		void erase (iterator position){
+
+		}
+		size_type erase (const key_type& k){
+
+		}
+		void erase (iterator first, iterator last){
+
 		}
 	};
 
