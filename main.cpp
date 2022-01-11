@@ -3,6 +3,7 @@
 #include "Includes/stack.hpp"
 #include "Includes/map.hpp"
 #include "Includes/pair.hpp"
+#include "Includes/map_iterator.hpp"
 #include <iostream>
 
 
@@ -154,6 +155,8 @@ int	main(void) {
 	mamap.insert(ft::make_pair(5, 7));
 	mamap.insert(ft::make_pair(3, 6));
 	mamap.insert(ft::make_pair(6, 8));
+
+	ft::map<int, int>::iterator it = mamap.begin();
 
 	return (0);
 }

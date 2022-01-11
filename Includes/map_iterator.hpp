@@ -24,22 +24,18 @@ namespace	ft{
 			_node = rhs._node;
 		}
 		bool	operator==(const iterator &rhs) const{
-			if (_node == rhs._node)
-				return (1);
-			return (0);
+			return (_node == rhs._node);
 		}
 		bool	operator!=(const iterator &rhs) const{
-			if (_node != rhs._node)
-				return (1);
-			return (0);
+			return (_node != rhs._node);
 		}
 		reference	operator*(void) const{
 			return (*_node);
 		}
 		pointer	operator->(void) const{
-			return(_node);
+			return (_node);
 		}
-		pointer	operator++(void) const{
+		iterator&	operator++(void) const{
 			if (_node->child[RIGHT]){
 				_node = _node->child[RIGHT];
 				while (_node->child[LEFT]){
@@ -52,11 +48,9 @@ namespace	ft{
 				}
 				_node = _node->parent;
 			}
-			return (_node->content);
+			return (iterator(_node));
 		}
 	};
-	
-	
 }
 
 
