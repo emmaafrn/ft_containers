@@ -48,7 +48,9 @@ public:
 	vector (typename enable_if<!is_integral<InputIterator>::value, InputIterator>::type first, InputIterator last, const allocator_type& alloc = allocator_type()) : _alloc(alloc), _size(0){
 		size_type	i = 0;
 		
-		_size = last - first;
+		for (size_type j = 0 ; j < size_type(last - first) ; j++){
+			_size++;
+		}
 		_tab = _alloc.allocate(_size);
 		while (i < _size){
 			_alloc.construct(&_tab[i], *first);
@@ -104,6 +106,7 @@ public:
 			_tab = tmp;
 		}
 		_alloc.construct(&(_tab[_size]), val);
+		(void)val;
 		_size++;
 	}
 
@@ -144,7 +147,9 @@ public:
 	}
 
 	bool empty() const{
-		return _size == 0;
+		if (_size == 0)
+			return (1);
+		return (0);
 	}
 
 	vector& operator=(const vector& x){
@@ -360,6 +365,25 @@ public:
 			_tab = ptr;
 			_size = s;
 			_capacity = c;
+		}
+	}
+	iterator erase (iterator position){
+		iterator prev = position;
+
+		while (prev != end() && position != end()){
+			position++;
+			if (position != end()){
+				*prev = *position;
+				prev++;
+			}
+		}
+		_alloc.destroy(prev);
+		_size--;
+	}
+	iterator erase (iterator first, iterator last){
+		while (first != last){
+			erase(first);
+			first++;
 		}
 	}
 };

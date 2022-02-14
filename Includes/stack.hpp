@@ -14,35 +14,34 @@ public:
 	typedef typename	container_type::const_reference	const_reference;
 	typedef typename	container_type::size_type		size_type;
 protected :
-	container_type		container;
+	container_type		c;
 public :
 
-
 explicit stack (const container_type& ctnr = container_type()){
-	this->container = ctnr;
+	this->c = ctnr;
 }
 
 bool empty() const{
-	return (container.empty());
+	return (c.empty());
 }
 
 size_type size() const{
-	return (container.size());
+	return (c.size());
 }
 
 value_type& top(){
-	return (container[size() - 1]);
+	return (c[size() - 1]);
 }
 const value_type& top() const{
-	return (container[size() - 1]);
+	return (c[size() - 1]);
 }
 
 void push (const value_type& val){
-	container.push_back(val);
+	c.push_back(val);
 }
 
 void pop(){
-	container.pop_back();
+	c.pop_back();
 }
 
 template <class T2, class Container2>
@@ -86,6 +85,8 @@ bool operator>= (const stack<T,Container>& lhs, const stack<T,Container>& rhs){
 }
 
 }
+
+
 
 
 

@@ -152,11 +152,15 @@ int	main(void) {
 	//MAP
 	ft::map<int, int> mamap;
 
-	mamap.insert(ft::make_pair(5, 7));
-	mamap.insert(ft::make_pair(3, 6));
-	mamap.insert(ft::make_pair(6, 8));
+	// mamap.insert(ft::make_pair(5, 7));
+	// mamap.insert(ft::make_pair(3, 6));
+	// mamap.insert(ft::make_pair(6, 8));
 
-	ft::map<int, int>::iterator it = mamap.begin();
+	// ft::map<int, int>::iterator it = mamap.begin();
 
+	// ft::Node<ft::pair<const int,int> > x(ft::make_pair(42,12));
+
+	// std::cout << x.content.first << "\n";
+	// std::cout << x.content.second << "\n";
 	return (0);
 }

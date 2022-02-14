@@ -17,18 +17,14 @@ struct Iterator
 	typedef Category	iterator_category;
 };
 
-struct random_access_iterator_tag
-{
-};
-
 template<class T>
-class ptr_iterator: public Iterator<random_access_iterator_tag, T>{
+class ptr_iterator: public Iterator<std::random_access_iterator_tag, T>{
 	public :
 	typedef T			value_type;
 	typedef ptrdiff_t	difference_type;
 	typedef T*		pointer;
 	typedef T&	reference;
-	typedef random_access_iterator_tag	iterator_category;
+	typedef std::random_access_iterator_tag	iterator_category;
 	// typedef typename ptr_iterator::pointer pointer;
 	// typedef std::ptr_iterator_tag	iterator_category;
 private:
@@ -76,26 +72,37 @@ public:
 		it._ptr = lhs._ptr + x;
 		return (it);
 	}
+	friend ptr_iterator	operator+(int x , const ptr_iterator &lhs){
+		ptr_iterator	it;
+
+		it._ptr = lhs._ptr + x;
+		return (it);
+	}
 	friend ptr_iterator	operator-(const ptr_iterator &lhs, int x){
 		ptr_iterator	it;
 
 		it._ptr = lhs._ptr - x;
 		return (it);
 	}
-	void	operator+=(int x){
-		_ptr += x;
+	friend ptr_iterator	operator-(int x, const ptr_iterator &lhs){
+		ptr_iterator	it;
+
+		it._ptr = lhs._ptr - x;
+		return (it);
 	}
-	void	operator-=(int x){
+	ptr_iterator	operator+=(int x){
+		_ptr += x;
+		return (*this);
+	}
+	ptr_iterator	operator-=(int x){
 		_ptr -= x;
+		return (*this);
 	}
 	void	operator=(const ptr_iterator &rhs){
 		_ptr = rhs._ptr;
 	}
 	T	&operator*(void){
 		return (*_ptr);
-	}
-	pointer	operator->(void){
-		return (_ptr);
 	}
 	reference	operator[](int n){
 		return (_ptr[n]);

@@ -3,6 +3,7 @@
 
 #include <cstddef>
 #include "Iterator.hpp"
+#include "bst_iterator.hpp"
 
 namespace ft{
 
@@ -27,6 +28,9 @@ public:
 	}
 	~reverse_iterator(){
 	}
+	iterator_type base() const{
+		return it;
+	}
 	reverse_iterator	&operator++(void){
 		it--;
 		return (*this);
@@ -42,14 +46,10 @@ public:
 		return (*this);
 	}
 	reverse_iterator	operator--(int){
-		reverse_iterator prev = this;
+		reverse_iterator prev = *this;
 
 		++it;
 		return (prev);
-	}
-	reverse_iterator	&operator-(const reverse_iterator &rhs){
-		it = it + rhs.it;
-		return (*this);
 	}
 	reverse_iterator	&operator+(int x){
 		it = it - x;
@@ -72,6 +72,13 @@ public:
 	}
 	value_type	&operator*(void){
 		return (*it);
+	}
+	reference	operator[](int x){
+		return it[x];
+	}
+
+	pointer		operator->(void){
+		return &*it;
 	}
 	template<typename A, typename B>
 	friend bool	operator==(reverse_iterator<A> lhs, reverse_iterator<B> rhs){
@@ -96,6 +103,10 @@ public:
 	template<typename A, typename B>
 	friend bool	operator>=(reverse_iterator<A> lhs, reverse_iterator<B> rhs){
 		return (lhs.it >= rhs.it);
+	}
+	template<typename A, typename B>
+	friend bool	operator-(reverse_iterator<A> lhs, reverse_iterator<B> rhs){
+		return rhs.base() - lhs.base();
 	}
 };
 

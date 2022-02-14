@@ -43,7 +43,7 @@ namespace	ft{
 				}
 			}
 			else {
-				while (!_node->child[LEFT] && !_node->child[RIGHT] && _node->parent && _node->parent->child[RIGHT] == _node){
+				while (_node->parent && _node->parent->child[RIGHT] == _node){
 					_node = _node->parent;
 				}
 				_node = _node->parent;
