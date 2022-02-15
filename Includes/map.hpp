@@ -142,7 +142,7 @@ public:
     return (*this);
   }
     mapped_type& operator[] (const key_type& k){
-    return (*_bst)[k];
+    return _bst->operator[](k);
   }
 private:
   __bst *_bst;

@@ -101,7 +101,7 @@ public:
 	void	operator=(const ptr_iterator &rhs){
 		_ptr = rhs._ptr;
 	}
-	T	&operator*(void){
+	value_type	&operator*(void){
 		return (*_ptr);
 	}
 	reference	operator[](int n){

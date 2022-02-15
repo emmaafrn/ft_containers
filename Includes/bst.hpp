@@ -8,11 +8,6 @@
 #include <cstddef>
 #include <iostream>
 
-#define RED 0
-#define BLACK 1
-#define RIGHT 0
-#define LEFT 1
-
 namespace ft {
 
 template <class T, class key, class mapped, class Compare, class Alloc> class bst {
@@ -39,18 +34,20 @@ public:
 		_alloc.construct(_end_node, Node(value_type()));
 	}
 	private :
-	void	_tree_copy(node_pointer n, node_pointer to_copy, node_pointer copy_begin, node_pointer copy_end){
-		if (to_copy != copy_begin && to_copy != copy_end){
-			if (n != _root)
-				n = _alloc.allocate(1);
-			_alloc.construct(n, Node(to_copy->value));
-			n->p = to_copy->p;
-			_size++;
-		}
-		if (to_copy->l)
-			_tree_copy(n->l, to_copy->l, copy_begin, copy_end);
-		if (to_copy->r)
-			_tree_copy(n->r, to_copy->r, copy_begin, copy_end);
+	node_pointer	_tree_copy(node_pointer to_copy, node_pointer copy_begin, node_pointer copy_end, node_pointer parent){
+		node_pointer n;
+		
+		n = _alloc.allocate(1);
+		_alloc.construct(n, Node(to_copy->value));
+		n->p = parent;
+		_size++;
+			
+		if (to_copy->l && to_copy->l != copy_begin)
+			n->l = _tree_copy(to_copy->l, copy_begin, copy_end, n);
+		if (to_copy->r && to_copy->r != copy_end)
+			n->r = _tree_copy(to_copy->r, copy_begin, copy_end, n);
+
+		return n;
 	}
 	public :
 	bst(const bst &copy) : _alloc(copy._alloc), _comp(copy._comp), _size(0){
@@ -58,8 +55,7 @@ public:
 		_alloc.construct(_begin_node, Node(value_type()));
 		_end_node = _alloc.allocate(1);
 		_alloc.construct(_end_node, Node(value_type()));
-		_root = _alloc.allocate(1);
-		_tree_copy(_root, copy._root, copy._begin_node, copy._end_node);
+		_root = _tree_copy(copy._root, copy._begin_node, copy._end_node, NULL);
 		assign_limit();
 		_last = copy._last;
 	}
@@ -307,7 +303,8 @@ public:
 		}
 	}
 	mapped_type& operator[] (const key_type& k){
-		return insert(ft::make_pair(k, mapped_type())).first->second;
+		insert(ft::make_pair(k, mapped_type()));
+		return find(k)->second;
 	}
 	private: 
 	allocator_type  _alloc;
@@ -347,7 +344,7 @@ public:
 		node_pointer pivot = root->r;
 
 		root->r = pivot->l; //le fils r de root devient le fils gauche de pivot
-		if (pivot->l && (pivot->l->r || pivot->l->l))
+		if (pivot->l /*&& (pivot->l->r || pivot->l->l)*/)
 			pivot->l->p = root;
 		pivot->p = root->p;
 		if (root->p == NULL){ //Si root est la racine, pivot devient la racine
@@ -365,7 +362,7 @@ public:
 		node_pointer pivot = root->l;
 
 		root->l = pivot->r; //le fils l de root devient le fils droit de pivot
-		if (pivot->r && (pivot->r->r || pivot->r->l))
+		if (pivot->r /*&& (pivot->r->r || pivot->r->l)*/)
 			pivot->r->p = root;
 		pivot->p = root->p;
 		if (root->p == NULL){ //Si root est la racine, pivot devient la racine

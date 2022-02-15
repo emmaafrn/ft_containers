@@ -21,7 +21,8 @@ public:
 
   bst_iterator(node_pointer ptr) : _elem(ptr) {}
 
-  value_type &operator*() { return _elem->value; }
+  value_type &operator*() { 
+    return _elem->value; }
 
   pointer operator->() { return &_elem->value; }
 

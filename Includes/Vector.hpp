@@ -4,6 +4,7 @@
 #include "Iterator.hpp"
 #include "ReverseIterator.hpp"
 #include "utils.hpp"
+#include <cstdlib>
 #include <exception>
 #include <memory>
 #include <iostream>
@@ -368,17 +369,15 @@ public:
 		}
 	}
 	iterator erase (iterator position){
-		iterator prev = position;
-
-		while (prev != end() && position != end()){
-			position++;
-			if (position != end()){
-				*prev = *position;
-				prev++;
-			}
+		size_type i = position - begin();
+		// std::cout << "i = " << i << std::endl;
+		while (_tab[i] && i < _size - 1){
+			_tab[i] = _tab[i + 1];
+			i++;
 		}
-		_alloc.destroy(prev);
+		_alloc.destroy(&_tab[i]);
 		_size--;
+		return position;
 	}
 	iterator erase (iterator first, iterator last){
 		while (first != last){
