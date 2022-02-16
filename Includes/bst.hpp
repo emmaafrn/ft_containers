@@ -8,6 +8,12 @@
 #include <cstddef>
 #include <iostream>
 
+#define RED 0
+#define BLACK 1
+#define RIGHT 1
+#define LEFT 0
+
+
 namespace ft {
 
 template <class T, class key, class mapped, class Compare, class Alloc> class bst {
@@ -85,34 +91,41 @@ public:
 	}
 	ft::pair<iterator, bool> insert(const value_type &val) {
 		destroy_limit();
-		node_pointer tmp = _insert(_root, val);
+		ft::pair<node_pointer, bool> tmp = _insert(_root, NULL, 0, val);
 		if (_last)
 			insertion_repare(_last);
 		assign_limit();
 		_size++;
-		return ft::make_pair(iterator(tmp), true);
+		return ft::make_pair(iterator(tmp.first), tmp.second);
 	}
 	private:
-	node_pointer _insert(node_pointer node, const value_type &val) {
+	ft::pair<node_pointer, bool> _insert(node_pointer node, node_pointer prev, bool dir, const value_type &val) {
+		ft::pair<node_pointer, bool> ret(NULL, false);
 		if (!node) {
 			if (!_root) {
 				_root = _alloc.allocate(1);
 				_alloc.construct(_root, Node(val));
 				_last = _root;
-				return _root;
+				return ft::make_pair(_root, true);
 			} else {
 				node = _alloc.allocate(1);
 				_alloc.construct(node, Node(val));
 				_last = node;
+				if (dir == LEFT)
+					prev->l = node;
+				else
+				 	prev->r = node;
+				node->p = prev;
+				return ft::make_pair(node, true);
 			}
-		} else if (node->value.first < val.first) {
-			node->r = _insert(node->r, val);
-			node->r->p = node;
-		} else if (node->value.first > val.first) {
-			node->l = _insert(node->l, val);
-			node->l->p = node;
 		}
-		return node;
+		else if (_comp(node->value.first, val.first))
+			ret = _insert(node->r, node, RIGHT, val);
+		else if (_comp(val.first, node->value.first))
+			ret = _insert(node->l, node, LEFT, val);
+		else
+			ret = ft::make_pair(node, false);
+		return ret;
 	}
 
 	public:
@@ -132,9 +145,9 @@ public:
 			found = true;
 			tmp = iterator(node);
 			return tmp;
-		} else if (node && node->value.first > k) {
+		} else if (node && _comp(k, node->value.first)) {
 			tmp = _find(node->l, k, tmp);
-		} else if (node && node->value.first < k) {
+		} else if (node && _comp(node->value.first, k)) {
 			tmp = _find(node->r, k, tmp);
 		}
 		if (found)
@@ -147,9 +160,9 @@ public:
 			found = true;
 			tmp = const_iterator(node);
 			return tmp;
-		} else if (node && node->value.first > k) {
+		} else if (node && _comp(k, node->value.first)) {
 			tmp = _find(node->l, k, tmp);
-		} else if (node && node->value.first < k) {
+		} else if (node && _comp(node->value.first, k)) {
 			tmp = _find(node->r, k, tmp);
 		}
 		if (found)
@@ -188,29 +201,34 @@ public:
 	void erase(iterator pos) {
 		destroy_limit();
 		_root = _erase(_root, pos.base()->value);
-		assign_limit();
 		_size--;
+		assign_limit();
 	}
 
 	private:
 	node_pointer   _find_successor(node_pointer node, node_pointer deleted){
 		if (node->l)
-			node->l = _find_successor(node->l, deleted);
+			node = _find_successor(node->l, deleted);
 		else {
-			if (node->p){
-				node->l = deleted->l;
+			node->l = deleted->l;
+			if (deleted->l)
 				deleted->l->p = node;
-			}
-			if (node != deleted->r)
+			if (node != deleted->r){
 				node->r = deleted->r;
-			else
-				node->r = NULL;
+				node->r->p = node;
+				if (node->r && node == node->r->l)
+					node->r->l = NULL;
+			}
 			node->p = deleted->p;
+			if (deleted == deleted->p->l)
+				node->p->l = node;
+			else if (deleted == deleted->p->r)
+				node->p->r = node;
 			node->color = deleted->color;
 			_alloc.destroy(deleted);
 			_alloc.deallocate(deleted, 1);
 		}
-		return (node);
+		return node;
 	}
 	node_pointer _has_child(node_pointer node){
 		if (node->r){
@@ -252,8 +270,16 @@ public:
 	}
 
 	public:
-	iterator begin() { return ++iterator(_begin_node); }
-	const_iterator begin() const { return ++const_iterator(_begin_node); }
+	iterator begin() {
+		if (_size == 0)
+			return end();
+		return ++iterator(_begin_node);
+	}
+	const_iterator begin() const {
+		if (_size == 0)
+			return end();
+		return ++const_iterator(_begin_node);
+	}
 	iterator end() { return iterator(_end_node); }
 	const_iterator end() const { return const_iterator(_end_node); }
 	reverse_iterator rend() { return reverse_iterator(_begin_node); }
@@ -300,6 +326,7 @@ public:
 			destruct(_root);
 			_root = NULL;
 			_size = 0;
+			destroy_limit();
 		}
 	}
 	mapped_type& operator[] (const key_type& k){
@@ -360,6 +387,7 @@ public:
 	}
 	void right_rotation(node_pointer root) {
 		node_pointer pivot = root->l;
+
 
 		root->l = pivot->r; //le fils l de root devient le fils droit de pivot
 		if (pivot->r /*&& (pivot->r->r || pivot->r->l)*/)

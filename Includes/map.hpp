@@ -103,11 +103,8 @@ public:
   }
 
   void swap (map& x){
-    __bst *tmp;
-
-    tmp = x._bst;
-    x._bst = _bst;
-    _bst = tmp;
+    std::swap(_bst, x._bst);
+    std::swap(_const_bst, x._const_bst);
   }
 
   iterator find(const key_type &k)  { return _bst->find(k); }
@@ -149,7 +146,10 @@ private:
   const __bst *_const_bst;
   bst_allocator _bst_alloc;
 };
-
+  template <class Key, class T, class Compare, class Alloc>
+  void swap (map<Key,T,Compare,Alloc>& x, map<Key,T,Compare,Alloc>& y){
+    x.swap(y);
+  }
 }
 
 #endif

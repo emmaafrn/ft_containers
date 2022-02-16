@@ -370,7 +370,7 @@ public:
 	}
 	iterator erase (iterator position){
 		size_type i = position - begin();
-		// std::cout << "i = " << i << std::endl;
+		
 		while (_tab[i] && i < _size - 1){
 			_tab[i] = _tab[i + 1];
 			i++;

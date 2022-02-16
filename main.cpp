@@ -212,6 +212,122 @@ void	lower_bound_test(){
     	std::cout << it->first << " => " << it->second << '\n';
 }
 
+void insert_many(ft::map<int, int> & container, int n) {
+  for (int i = 0; i < n; ++i) {
+    container.insert(ft::make_pair(i, i));
+  }
+}
+
+template <class Container>
+void print_container(Container const & m) {
+  for (typename Container::const_iterator it = m.begin(); it != m.end(); ++it) {
+    if (it != m.begin())
+      std::cout << ", ";
+    std::cout << "(" << (*it).first << "," << (*it).second << ")";;
+  }
+}
+template <class Container>
+void print_container_nl(Container const & m) {
+  print_container(m);
+  std::cout << std::endl;
+}
+template <class T1, class T2, class Comp>
+void insert(ft::map<T1, T2, Comp> & container, T1 k, T2 v) {
+  ft::pair<T1, T2> val = ft::make_pair(k, v);
+  std::cout << "Inserting " << "(" << val.first << "," << val.second << ")" << std::endl;
+
+  ft::pair<typename ft::map<T1, T2, Comp>::iterator, bool> ret = container.insert(val);
+
+  std::cout << "Was present : " << ret.second << std::endl;
+//   std::cout << "Iterator points to " << (*ret).first << std::endl;
+}
+void test_insert()
+{
+  ft::map<int, int> m0;
+
+  std::boolalpha(std::cout);
+  for (int i = 0; i < 5; ++i) {
+    insert(m0, i, i);
+  }
+  for (int i = 0; i < 5; ++i) {
+    insert(m0, i, 2 * i);
+  }
+
+  insert_many(m0, 10000);
+}
+
+void test_clear() {
+  srand(time(NULL));
+  ft::map<int, int> m;
+
+  for (int i = 0; i < 1000 ; ++i) {
+    m[i] = rand();
+    if (i > 0)
+      std::cout << ", ";
+  }
+  m.clear();
+  print_container_nl(m);
+  std::cout << m.size();
+}
+
+void test_swap() {
+  ft::map<int, int> m1, m2;
+
+  for (int i = 0; i < 10; ++i) {
+    m1[i] = i;
+    m2[i] = 10 + i;
+  }
+  std::cout << "m1 = ";
+  print_container_nl(m1);
+  std::cout << "m2 = ";
+  print_container_nl(m2);
+  std::cout << "m1.swap(m2)..." << std::endl;
+  m1.swap(m2);
+  std::cout << "m1 = ";
+  print_container_nl(m1);
+  std::cout << "m2 = ";
+  print_container_nl(m2);
+  std::cout << "swap(m1, m2)..." << std::endl;
+  swap(m1, m2);
+  std::cout << "m1 = ";
+  print_container_nl(m1);
+  std::cout << "m2 = ";
+  print_container_nl(m2);
+}
+
+void test_erase() {
+  ft::map<int, int> m;
+
+  for (int i = 0; i < 10; ++i) {
+    m[i] = i;
+  }
+  std::cout << "m.erase(2) = " << m.erase(2) << std::endl;
+  print_container_nl(m);
+  std::cout << "m.erase(2) = " << m.erase(2) << std::endl;
+  print_container_nl(m);
+  m.erase(m.begin());
+  m.erase(--(m.end()));
+  print_container_nl(m);
+  ft::map<int, int>::iterator it[2] = {m.begin(), m.end()};
+  it[0]++; it[0]++;
+  it[1]--; it[1]--;
+  m.erase(it[0], it[1]);
+  print_container_nl(m);
+  std::cout << "size = " << m.size() << std::endl;
+}
+
+
+void test() {
+  std::cout << "--- Test insert ---" << std::endl;
+  test_insert();
+  std::cout << "--- Test erase ---" << std::endl;
+  test_erase();
+  std::cout << "--- Test swap ---" << std::endl;
+  test_swap();
+  std::cout << "--- Test clear ---" << std::endl;
+  test_clear();
+}
+
 int	main(void) {
 	// VECTOR
 	// test_after_swap();
@@ -252,6 +368,7 @@ int	main(void) {
 	// std::cout << "stack's top = " << s.top() << std::endl;
 
 	//MAP
+	test();
 	// ft::map<int, int> m;
 
 	// for (int i = 0; i < 100; i++) {
@@ -283,23 +400,23 @@ int	main(void) {
 //   for(ft::map<int, int>::iterator it = m_copy.begin(); it != m_copy.end(); it++) std::cout << it->first << std::endl;
 //   for(ft::map<int, int>::iterator it = m_assign.begin(); it != m_assign.end(); it++) std::cout << it->first << std::endl;
 	
-	ft::map<int, int> bst;
+	// ft::map<int, int> bst;
 
- 	for (int i = 0; i < 15; ++i){
- 	 	bst.insert(ft::make_pair(i, i));
-		// std::cout << "i = " << i << std::endl;
-	 	// for (ft::map<int, int>::reverse_iterator it = bst.rbegin(); it != bst.rend(); ++it)
-	 	// std::cout << "("  << it->first << ", " << it->second << "), " << std::endl;
-	}
+ 	// for (int i = 0; i < 15; ++i){
+ 	//  	bst.insert(ft::make_pair(i, i));
+	// 	// std::cout << "i = " << i << std::endl;
+	//  	// for (ft::map<int, int>::reverse_iterator it = bst.rbegin(); it != bst.rend(); ++it)
+	//  	// std::cout << "("  << it->first << ", " << it->second << "), " << std::endl;
+	// }
 
- 	// std::cout << "Mutable iterator" << std::endl;
- 	for (ft::map<int, int>::iterator it = bst.begin(); it != bst.end(); ++it)
- 	  std::cout << "("  << it->first << ", " << it->second << "), " << std::endl;
- 	std::cout << "END" << std::endl;
+ 	// // std::cout << "Mutable iterator" << std::endl;
+ 	// for (ft::map<int, int>::iterator it = bst.begin(); it != bst.end(); ++it)
+ 	//   std::cout << "("  << it->first << ", " << it->second << "), " << std::endl;
+ 	// std::cout << "END" << std::endl;
 
-	bst.ft_print(0);
- 	std::cout << "Mutable reverse iterator" << std::endl;
- 	for (ft::map<int, int>::reverse_iterator it = bst.rbegin(); it != bst.rend(); ++it)
- 	  std::cout << "("  << it->first << ", " << it->second << "), " << std::endl;
- 	std::cout << "END" << std::endl;
+	// bst.ft_print(0);
+ 	// std::cout << "Mutable reverse iterator" << std::endl;
+ 	// for (ft::map<int, int>::reverse_iterator it = bst.rbegin(); it != bst.rend(); ++it)
+ 	//   std::cout << "("  << it->first << ", " << it->second << "), " << std::endl;
+ 	// std::cout << "END" << std::endl;
 }	
