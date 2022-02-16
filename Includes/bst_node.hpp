@@ -10,7 +10,9 @@ template <class T> struct bst_node {
   typedef T value_type;
   typedef bst_node *node_pointer;
 
-  bst_node(const value_type &val) : p(nullptr), l(nullptr), r(nullptr), value(val), color(RED) {}
+  bst_node(const value_type &val) : p(), l(), r(), value(val), color(RED) {}
+
+  bst_node(const bst_node &copy) : p(copy.p), l(copy.l), r(copy.r), value(copy.value), color(copy.color) {}
 
   bst_node(node_pointer parent, node_pointer left, node_pointer right,
            const value_type &val, bool colo)

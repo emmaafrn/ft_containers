@@ -7,6 +7,7 @@
 #include "pair.hpp"
 #include <cstddef>
 #include <iostream>
+#include <map>
 
 #define RED 0
 #define BLACK 1
@@ -35,33 +36,32 @@ public:
 	bst(allocator_type alloc = allocator_type(), key_compare comp = key_compare())
 			: _alloc(alloc), _comp(comp), _root(), _size(0), _last(NULL) {
 		_begin_node = _alloc.allocate(1);
-		_alloc.construct(_begin_node, Node(value_type()));
+		_alloc.construct(_begin_node, value_type());
 		_end_node = _alloc.allocate(1);
-		_alloc.construct(_end_node, Node(value_type()));
+		_alloc.construct(_end_node, value_type());
 	}
 	private :
 	node_pointer	_tree_copy(node_pointer to_copy, node_pointer copy_begin, node_pointer copy_end, node_pointer parent){
 		node_pointer n;
 		
 		n = _alloc.allocate(1);
-		_alloc.construct(n, Node(to_copy->value));
+		_alloc.construct(n, to_copy->value);
 		n->p = parent;
 		_size++;
-			
 		if (to_copy->l && to_copy->l != copy_begin)
 			n->l = _tree_copy(to_copy->l, copy_begin, copy_end, n);
 		if (to_copy->r && to_copy->r != copy_end)
 			n->r = _tree_copy(to_copy->r, copy_begin, copy_end, n);
-
 		return n;
 	}
 	public :
-	bst(const bst &copy) : _alloc(copy._alloc), _comp(copy._comp), _size(0){
+	bst(const bst &copy) : _alloc(copy._alloc), _comp(copy._comp), _root(NULL), _size(0){
 		_begin_node = _alloc.allocate(1);
 		_alloc.construct(_begin_node, Node(value_type()));
 		_end_node = _alloc.allocate(1);
 		_alloc.construct(_end_node, Node(value_type()));
-		_root = _tree_copy(copy._root, copy._begin_node, copy._end_node, NULL);
+		if (copy._root)
+			_root = _tree_copy(copy._root, copy._begin_node, copy._end_node, NULL);
 		assign_limit();
 		_last = copy._last;
 	}
@@ -136,6 +136,7 @@ public:
 	}
 	const_iterator find(const key_type &k) const{
 		const_iterator tmp = _find(_root, k, end());
+
 		return tmp;
 	}
 
@@ -224,9 +225,9 @@ public:
 					node->r->l = NULL;
 			}
 			node->p = deleted->p;
-			if (deleted == deleted->p->l)
+			if (deleted != _root && deleted == deleted->p->l)
 				node->p->l = node;
-			else if (deleted == deleted->p->r)
+			else if (deleted != _root && deleted == deleted->p->r)
 				node->p->r = node;
 			node->color = deleted->color;
 			_alloc.destroy(deleted);
@@ -302,28 +303,34 @@ public:
 	}
 	iterator lower_bound (const key_type& k){
 		node_pointer	tmp = _root;
+		node_pointer	res = tmp;
 
-		while (tmp && key_comp()(tmp->value.first, k)
-			&& tmp != _end_node && tmp != _begin_node){
-			tmp = tmp->r;
+		while (tmp){
+			if (!_comp(tmp->value.first, k))
+				tmp = tmp->l;
+			else
+				tmp = tmp->r;
+			if (tmp && !_comp(tmp->value.first, k))
+				res = tmp;
 		}
-		if (tmp)
-			return iterator(tmp);
-		return (end());
+		return iterator(res);
 	}
 	iterator upper_bound (const key_type& k){
 		node_pointer	tmp = _root;
+		node_pointer	res = tmp;
 
-		while (tmp && ((key_comp()(tmp->value.first, k))
-			|| (!key_comp()(tmp->value.first, k) && !key_comp()(k, tmp->value.first)))){
-			tmp = tmp->r;
+		while (tmp){
+			if (!_comp(tmp->value.first, k) && !(!_comp(tmp->value.first, k) && !_comp(k, tmp->value.first)))
+				tmp = tmp->l;
+			else
+				tmp = tmp->r;
+			if (tmp && !_comp(tmp->value.first, k) && !(!_comp(tmp->value.first, k) && !_comp(k, tmp->value.first)) )
+				res = tmp;
 		}
-		if (tmp)
-			return iterator(tmp);
-		return (end());
+		return iterator(res);
 	}
 	pair<iterator,iterator> equal_range (const key_type& k){
-		return make_pair(lower_bound(k), upper_bound(k));
+		return ft::make_pair(lower_bound(k), upper_bound(k));
 	}
 	void clear(){
 		if (_root){

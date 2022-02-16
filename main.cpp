@@ -223,7 +223,7 @@ void print_container(Container const & m) {
   for (typename Container::const_iterator it = m.begin(); it != m.end(); ++it) {
     if (it != m.begin())
       std::cout << ", ";
-    std::cout << "(" << (*it).first << "," << (*it).second << ")";;
+    std::cout << "(" << (*it).first << "," << (*it).second << ")";
   }
 }
 template <class Container>
@@ -231,6 +231,27 @@ void print_container_nl(Container const & m) {
   print_container(m);
   std::cout << std::endl;
 }
+template <class Iterator>
+void print_all(Iterator first, Iterator last) {
+  for (Iterator it = first; it != last; ++it) {
+    if (it != first)
+      std::cout << ", ";
+    std::cout << "(" << (*it).first << "," << (*it).second << ")";
+  }
+}
+template <class Iterator>
+void print_all_nl(Iterator first, Iterator last) {
+  print_all(first, last);
+  std::cout << std::endl;
+}
+static ft::map<int, int> m10;
+
+void set_m10() {
+  for (int i = 0; i < 10; ++i) {
+    m10[i] = i;
+  }
+}
+
 template <class T1, class T2, class Comp>
 void insert(ft::map<T1, T2, Comp> & container, T1 k, T2 v) {
   ft::pair<T1, T2> val = ft::make_pair(k, v);
@@ -345,21 +366,79 @@ void test_int() {
   for (int i = 0; i < 20; ++i)
     std::cout << m[i] << std::endl;
 }
+void test_lower_bound() {
+  ft::map<int, int> m = m10;
+  m.erase(3);
 
-// void test_str() {
-//   map<std::string, int, KeyCompareStr> m;
+  std::cout << "lower_bound of 2 in m : ";
+  print_all_nl(m.lower_bound(2), m.end());
+  std::cout << "lower_bound of 3 in m : ";
+  print_all_nl(m.lower_bound(3), m.end());
+  std::cout << "lower_bound of 4 in m : ";
+  print_all_nl(m.lower_bound(4), m.end());
+}
 
-//   for (int i = 0; i < 20; ++i)
-//     insert(m, std::to_string(i), i);
+void test_upper_bound() {
+  ft::map<int, int> m = m10;
+  m.erase(3);
 
-//   for (int i = 0; i < 20; ++i)
-//     std::cout << m[std::to_string(i)] << std::endl;
-// }
+  std::cout << "upper_bound of 2 in m : ";
+  print_all_nl(m.upper_bound(2), m.end());
+  std::cout << "upper_bound of 3 in m : ";
+  print_all_nl(m.upper_bound(3), m.end());
+  std::cout << "upper_bound of 4 in m : ";
+  print_all_nl(m.upper_bound(4), m.end());
+}
 
+void test_equal_range() {
+  ft::map<int, int> m = m10;
+  m.erase(3);
+  ft::pair<ft::map<int, int>::iterator, ft::map<int, int>::iterator> range;
 
+  range = m.equal_range(2);
+  std::cout << "equal_range of 2 in m : ";
+  print_all_nl(range.first, range.second);
+  std::cout << "equal_range of 3 in m : ";
+  range = m.equal_range(3);
+  print_all_nl(range.first, range.second);
+}
 
 int	main(void) {
-	// VECTOR
+	set_m10();
+	std::boolalpha(std::cout);
+	
+	test_lower_bound();
+	test_upper_bound();
+	test_equal_range();
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// VECTOR
 	// test_after_swap();
 	// insert_tests();
 	// iterators_tests();
@@ -400,7 +479,7 @@ int	main(void) {
 	//MAP
 
 	// test();
-	test_int();
+	// test_int();
 	// ft::map<int, int> m;
 
 	// for (int i = 0; i < 100; i++) {
@@ -451,4 +530,3 @@ int	main(void) {
  	// for (ft::map<int, int>::reverse_iterator it = bst.rbegin(); it != bst.rend(); ++it)
  	//   std::cout << "("  << it->first << ", " << it->second << "), " << std::endl;
  	// std::cout << "END" << std::endl;
-}	
