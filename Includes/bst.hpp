@@ -95,7 +95,8 @@ public:
 		if (_last)
 			insertion_repare(_last);
 		assign_limit();
-		_size++;
+		if (tmp.second)
+			_size++;
 		return ft::make_pair(iterator(tmp.first), tmp.second);
 	}
 	private:
@@ -105,7 +106,6 @@ public:
 			if (!_root) {
 				_root = _alloc.allocate(1);
 				_alloc.construct(_root, Node(val));
-				_last = _root;
 				return ft::make_pair(_root, true);
 			} else {
 				node = _alloc.allocate(1);
@@ -131,6 +131,7 @@ public:
 	public:
 	iterator find(const key_type &k) {
 		iterator tmp = _find(_root, k, end());
+
 		return tmp;
 	}
 	const_iterator find(const key_type &k) const{
@@ -141,14 +142,15 @@ public:
 	private:
 	iterator _find(node_pointer node, const key_type &k, iterator tmp){
 		static bool	found = false;
-		if (node && node->value.first == k) {
-			found = true;
-			tmp = iterator(node);
-			return tmp;
-		} else if (node && _comp(k, node->value.first)) {
+		if (node && _comp(k, node->value.first)) {
 			tmp = _find(node->l, k, tmp);
 		} else if (node && _comp(node->value.first, k)) {
 			tmp = _find(node->r, k, tmp);
+		}
+		else if (node) {
+			found = true;
+			tmp = iterator(node);
+			return tmp;
 		}
 		if (found)
 			return tmp;
@@ -156,14 +158,16 @@ public:
 	}
 	const_iterator _find(node_pointer node, const key_type &k, const_iterator tmp) const{
 		static bool	found = false;
-		if (node && node->value.first == k) {
-			found = true;
-			tmp = const_iterator(node);
-			return tmp;
-		} else if (node && _comp(k, node->value.first)) {
+		
+		if (node && _comp(k, node->value.first)) {
 			tmp = _find(node->l, k, tmp);
 		} else if (node && _comp(node->value.first, k)) {
 			tmp = _find(node->r, k, tmp);
+		}
+		else if (node) {
+			found = true;
+			tmp = const_iterator(node);
+			return tmp;
 		}
 		if (found)
 			return tmp;
@@ -257,11 +261,11 @@ public:
 			}
 			else
 				return _has_child(node);
-		} else if (node && node->value.first > val.first) {
+		} else if (node && _comp(val.first, node->value.first)) {
 			node->l = _erase(node->l, val);
 			if (node->l)
 				node->l->p = node;
-		} else if (node && node->value.first < val.first) {
+		} else if (node && _comp(node->value.first, val.first)) {
 			node->r = _erase(node->r, val);
 			if (node->r)
 				node->r->p = node;
