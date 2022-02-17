@@ -7,7 +7,7 @@
 #include "pair.hpp"
 #include <cstddef>
 #include <iostream>
-#include <map>
+
 
 #define RED 0
 #define BLACK 1
@@ -382,7 +382,7 @@ public:
 		node_pointer pivot = root->r;
 
 		root->r = pivot->l; //le fils r de root devient le fils gauche de pivot
-		if (pivot->l /*&& (pivot->l->r || pivot->l->l)*/)
+		if (pivot->l)
 			pivot->l->p = root;
 		pivot->p = root->p;
 		if (root->p == NULL){ //Si root est la racine, pivot devient la racine
@@ -401,7 +401,7 @@ public:
 
 
 		root->l = pivot->r; //le fils l de root devient le fils droit de pivot
-		if (pivot->r /*&& (pivot->r->r || pivot->r->l)*/)
+		if (pivot->r)
 			pivot->r->p = root;
 		pivot->p = root->p;
 		if (root->p == NULL){ //Si root est la racine, pivot devient la racine
