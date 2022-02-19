@@ -4,56 +4,32 @@
 #include <iostream>
 #include <ostream>
 
-
-void	test_after_swap(){
-	std::allocator<int> alloc;
-	std::vector<int> a(5, 42, alloc);
-	std::vector<int> b(10, 24, alloc);
-	std::vector<int>::iterator it;
-	std::vector<int>::iterator ite;
-	int	&r1 = a[4];
-	int	&r2 = b[4];
-
-	a.pop_back();
-	a.push_back(4);
-	
-	it = a.begin();
-	ite = a.end();
-	std::cout << "----------- A -----------\n";
-	while (it != ite){
+void	vector_erase(){
+	std::cout << "BEFORE ERASE OF 4\n";
+	std::vector<int> v;
+	for (int i = 0; i < 8; i++) v.push_back(i);
+	std::vector<int>::iterator it = v.begin();
+	std::vector<int>::iterator after = v.begin();
+	while (it != v.end()){
 		std::cout << *it << std::endl;
 		it++;
 	}
-	std::cout << "----------- B -----------\n";
-	it = b.begin();
-	ite = b.end();
-	while (it != ite){
-		std::cout << *it << std::endl;
+	int i = 0;
+	it = v.begin();
+	while (i <= 3){
 		it++;
+		i++;
 	}
-	std::cout << "r1 = " << r1 << std::endl;
-	std::cout << "r2 = " << r2 << std::endl;
-	swap(a,b);
-	it = a.begin();
-	ite = a.end();
-	std::cout << "---------- AFTER SWAP -----------" << std::endl;
-	std::cout << "----------- A -----------\n";
-	while (it != ite){
-		std::cout << *it << std::endl;
-		it++;
+	v.erase(it);
+	std::cout << "AFTER ERASE OF 4\n";
+	after = v.begin();
+	while (after != v.end()){
+		std::cout << *after << std::endl;
+		after++;
 	}
-	std::cout << "----------- B -----------\n";
-	it = b.begin();
-	ite = b.end();
-	while (it != ite){
-		std::cout << *it << std::endl;
-		it++;
-	}
-	std::cout << "r1 = " << r1 << std::endl;
-	std::cout << "r2 = " << r2 << std::endl;
 }
 
-void	insert_tests(){
+void	vector_insert(){
 	std::vector<int> a;
 	std::vector<int> b;
 	std::vector<int> c;
@@ -67,6 +43,7 @@ void	insert_tests(){
 	it = a.begin();
 	ite = a.end();
 	it = a.insert(++it, 500);
+  it = a.begin();
 	ite = a.end();
 	while (it != ite){
 		std::cout << *it << std::endl;
@@ -101,7 +78,7 @@ void	insert_tests(){
 	}
 }
 
-void	iterators_tests() {
+void	vector_iterators() {
 	std::vector<int>			vect;
 	
 
@@ -110,7 +87,6 @@ void	iterators_tests() {
 	for (std::vector<int>::iterator it = vect.begin(); it != vect.end(); it++) std::cout << *it << " ";
 	std::cout << std::endl;
 	std::cout << "reverse iterator\n";
-	// std::cout << "end = "<< *(vect.rend()) << std::endl;
 	for (std::vector<int>::reverse_iterator rit = vect.rbegin() ; rit != vect.rend(); rit++) std::cout << *rit << " ";
 	std::cout << std::endl;
 	std::cout << "iterator\n";
@@ -141,6 +117,24 @@ std::map<char,int> mymap;
   std::cout << "mymap contains:\n";
   for (std::map<char,int>::iterator it = mymap.begin(); it!=mymap.end(); ++it)
     std::cout << it->first << " => " << it->second << '\n';
+}
+
+void  count_test(){
+  std::map<char,int> mymap;
+  char c;
+
+  mymap ['a']=101;
+  mymap ['c']=202;
+  mymap ['f']=303;
+
+  for (c='a'; c<'h'; c++)
+  {
+    std::cout << c;
+    if (mymap.count(c)>0)
+      std::cout << " is an element of mymap.\n";
+    else 
+      std::cout << " is not an element of mymap.\n";
+  }
 }
 
 void	get_allocator_test(){
@@ -180,23 +174,6 @@ void	key_compare_test(){
   std::cout << '\n';
 }
 
-void	lower_bound_test(){
-  std::map<char,int> mymap;
-  std::map<char,int>::iterator itlow,itup;  
-
-  mymap['a'] = 20;
-  mymap['b'] = 40;
-  mymap['c'] = 60;
-  mymap['d'] = 80;
-  mymap['e'] = 100;
-  
-  itlow = mymap.lower_bound ('b');  // itlow points to b
-  itup = mymap.upper_bound ('d');   // itup points to e (not d!)  
-  mymap.erase(itlow,itup);        // erases [itlow,itup)
-
-  for (std::map<char,int>::iterator it=mymap.begin(); it!=mymap.end(); ++it)
-    	std::cout << it->first << " => " << it->second << '\n';
-}
 
 void insert_many(std::map<int, int> & container, int n) {
   for (int i = 0; i < n; ++i) {
@@ -300,6 +277,25 @@ void test_swap() {
   print_container_nl(m1);
   std::cout << "m2 = ";
   print_container_nl(m2);
+
+  std::map<char,int> foo,bar;
+
+  foo['x']=100;
+  foo['y']=200;
+
+  bar['a']=11;
+  bar['b']=22;
+  bar['c']=33;
+
+  foo.swap(bar);
+
+  std::cout << "foo contains:\n";
+  for (std::map<char,int>::iterator it=foo.begin(); it!=foo.end(); ++it)
+    std::cout << it->first << " => " << it->second << '\n';
+
+  std::cout << "bar contains:\n";
+  for (std::map<char,int>::iterator it=bar.begin(); it!=bar.end(); ++it)
+    std::cout << it->first << " => " << it->second << '\n';
 }
 
 void test_erase() {
@@ -343,15 +339,6 @@ struct KeyCompareStr {
   }
 };
 
-void test_int() {
-  std::map<int, int, KeyCompareInt> m;
-
-  for (int i = 0; i < 20; ++i)
-    insert(m, i, i);
-
-  for (int i = 0; i < 20; ++i)
-    std::cout << m[i] << std::endl;
-}
 void test_lower_bound() {
   std::map<int, int> m = m10;
   m.erase(3);
@@ -389,14 +376,88 @@ void test_equal_range() {
   print_all_nl(range.first, range.second);
 }
 
-int	main(void) {
-	set_m10();
-	std::boolalpha(std::cout);
-	
-	test_lower_bound();
-	test_upper_bound();
-	test_equal_range();
-	test_after_swap();
-	iterators_tests();
+void empty_test(){
+  std::map<char,int> mymap;
 
+  mymap['a']=10;
+  mymap['b']=20;
+  mymap['c']=30;
+
+  while (!mymap.empty())
+  {
+    std::cout << mymap.begin()->first << " => " << mymap.begin()->second << '\n';
+    mymap.erase(mymap.begin());
+  }
+}
+
+void  find_test(){
+  std::map<char,int> mymap;
+  std::map<char,int>::iterator it;
+
+  mymap['a']=50;
+  mymap['b']=100;
+  mymap['c']=150;
+  mymap['d']=200;
+
+  it = mymap.find('b');
+  if (it != mymap.end())
+    mymap.erase (it);
+
+  // print content:
+  std::cout << "elements in mymap:" << '\n';
+  std::cout << "a => " << mymap.find('a')->second << '\n';
+  std::cout << "c => " << mymap.find('c')->second << '\n';
+  std::cout << "d => " << mymap.find('d')->second << '\n';
+}
+
+void	map_tests(){
+  std::cout << "______________ MAP _______________\n";
+	set_m10();
+  std::boolalpha(std::cout);
+
+  std::cout << "--- Test lower_bound ---" << std::endl;
+	test_lower_bound();
+  std::cout << "--- Test upper_bound ---" << std::endl;
+	test_upper_bound();
+  std::cout << "--- Test equal_range ---" << std::endl;
+	test_equal_range();
+  std::cout << "--- Test insert ---" << std::endl;
+  test_insert();
+  std::cout << "--- Test erase ---" << std::endl;
+  test_erase();
+  std::cout << "--- Test swap ---" << std::endl;
+  test_swap();
+  std::cout << "--- Test clear ---" << std::endl;
+  test_clear();
+	// clear_test();
+  std::cout << "--- Test count ---" << std::endl;
+	count_test();
+	std::cout << "--- Test get_allocator ---" << std::endl;
+  get_allocator_test();
+	std::cout << "--- Test key_compare ---" << std::endl;
+  key_compare_test();
+  std::cout << "--- Test insert ---" << std::endl;
+	test_insert();
+	std::cout << "--- Test erase ---" << std::endl;
+	test_erase();
+  std::cout << "--- Test empty ---" << std::endl;
+	empty_test();
+}
+
+void	vector_tests(){
+  std::cout << "______________ VECTOR _______________\n"; 
+  vector_erase();
+	vector_insert();
+	vector_iterators();
+}
+
+void	stack_tests(){
+  std::cout << "______________ STACK _______________\n"; 
+	
+}
+
+int	main(void) {
+	map_tests();
+  vector_tests();
+	stack_tests();
 }
