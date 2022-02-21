@@ -31,7 +31,14 @@ public:
 	typedef size_t size_type;
 	typedef key key_type;
 	typedef Compare key_compare;
-
+private :
+	allocator_type  _alloc;
+	key_compare     _comp;
+	node_pointer    _root;
+	node_pointer    _begin_node;
+	node_pointer    _end_node;
+	size_type       _size;
+	node_pointer    _last;
 public:
 	bst(allocator_type alloc = allocator_type(), key_compare comp = key_compare())
 			: _alloc(alloc), _comp(comp), _root(), _size(0), _last(NULL) {
@@ -273,7 +280,6 @@ public:
 		}
 		return (node);
 	}
-
 	public:
 	iterator begin() {
 		if (_size == 0)
@@ -346,14 +352,6 @@ public:
 		return find(k)->second;
 	}
 	private: 
-	allocator_type  _alloc;
-	key_compare     _comp;
-	node_pointer    _root;
-	node_pointer    _begin_node;
-	node_pointer    _end_node;
-	size_type       _size;
-	node_pointer    _last;
-
 	node_pointer	get_grand_parent(node_pointer node){
 		node_pointer gparent = get_parent(get_parent(node));
 		if (gparent == NULL)
