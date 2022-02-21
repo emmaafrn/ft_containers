@@ -385,6 +385,7 @@ public:
 			first++;
 		}
 	}
+	allocator_type get_allocator() const{ return allocator_type(); }
 };
 	template <class T, class Alloc>
 	void swap (vector<T,Alloc>& x, vector<T,Alloc>& y){
