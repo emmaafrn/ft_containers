@@ -104,6 +104,9 @@ public:
 	value_type	&operator*(void){
 		return (*_ptr);
 	}
+	value_type	&operator->(void){
+		return (_ptr);
+	}
 	reference	operator[](int n){
 		return (_ptr[n]);
 	}

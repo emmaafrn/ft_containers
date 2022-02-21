@@ -386,6 +386,7 @@ public:
 		}
 	}
 	allocator_type get_allocator() const{ return allocator_type(); }
+	value_type* data(){ return _tab; }
 };
 	template <class T, class Alloc>
 	void swap (vector<T,Alloc>& x, vector<T,Alloc>& y){

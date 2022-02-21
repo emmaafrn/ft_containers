@@ -138,7 +138,7 @@ public:
     _bst_alloc.construct(_bst, *x._bst);
     return (*this);
   }
-    mapped_type& operator[] (const key_type& k){
+  mapped_type& operator[] (const key_type& k){
     return _bst->operator[](k);
   }
 private:

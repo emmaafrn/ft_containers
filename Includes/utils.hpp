@@ -1,6 +1,33 @@
 #ifndef UTILS_HPP
 # define UTILS_HPP
 
+#include <cstddef>
+#include <iterator>
+template <class Iterator>
+class iterator_traits{
+	typedef typename Iterator::difference_type		difference_type;
+	typedef typename Iterator::value_type			value_type;
+	typedef typename Iterator::pointer				pointer;
+	typedef typename Iterator::reference			reference;
+	typedef typename Iterator::iterator_category	iterator_category;
+};
+template <class T>
+class iterator_traits<T*>{
+	typedef ptrdiff_t						difference_type;
+	typedef T								value_type;
+	typedef T*								pointer;
+	typedef T&								reference;
+	typedef std::random_access_iterator_tag	iterator_category;
+};
+template <class T>
+class iterator_traits<const T*>{
+	typedef ptrdiff_t						difference_type;
+	typedef T								value_type;
+	typedef const T*						pointer;
+	typedef const T&						reference;
+	typedef std::random_access_iterator_tag	iterator_category;
+};
+
 template <class InputIterator1, class InputIterator2>
 	bool lexicographical_compare (InputIterator1 first1, InputIterator1 last1, InputIterator2 first2, InputIterator2 last2){
 	while (first1!=last1)
