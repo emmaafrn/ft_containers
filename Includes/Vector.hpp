@@ -92,7 +92,7 @@ public:
 	void	push_back(const value_type& val){
 		value_type	*tmp;
 		size_type	size_tmp = _size;
-		size_type	capacity_tmp = (_capacity + 1) * 2;
+		size_type	capacity_tmp = (_capacity * 2) + 1;
 		Allocator	alloc_tmp = _alloc;
 
 		if (_size == _capacity){

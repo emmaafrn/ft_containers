@@ -672,6 +672,7 @@ void	map_tests(){
 	test_swap();
 	std::cout << "--- Test clear ---" << std::endl;
 	test_clear();
+	clear_test();
 	std::cout << "--- Test assign and copy constructor ---" << std::endl;
 	map_copy_construct_assign();
 	std::cout << "--- Test iterators ---" << std::endl;
@@ -748,7 +749,7 @@ int	main(void) {
 	map_tests();
 	vector_tests();
 	stack_tests();
-
+	
 	return 0;
 }
 

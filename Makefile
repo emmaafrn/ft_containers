@@ -13,7 +13,7 @@ RM  = rm -f
 
 INC_CMP = -I .
 
-CXXFLAGS = -Wall -Wextra -Werror -std=c++98 #-g3 -fsanitize=address
+CXXFLAGS = -Wall -Wextra -Werror -std=c++98 -g3 -fsanitize=address
 
 all:			$(NAME) $(NAME_STD)
 

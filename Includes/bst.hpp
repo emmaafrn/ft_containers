@@ -337,6 +337,7 @@ public:
 			destruct(_root);
 			_root = NULL;
 			_size = 0;
+			_last = NULL;
 			destroy_limit();
 		}
 	}
