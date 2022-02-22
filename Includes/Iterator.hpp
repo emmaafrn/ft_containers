@@ -25,8 +25,7 @@ class ptr_iterator: public Iterator<std::random_access_iterator_tag, T>{
 	typedef T*		pointer;
 	typedef T&	reference;
 	typedef std::random_access_iterator_tag	iterator_category;
-	// typedef typename ptr_iterator::pointer pointer;
-	// typedef std::ptr_iterator_tag	iterator_category;
+
 private:
 	pointer	_ptr;
 public:

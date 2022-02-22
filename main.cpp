@@ -325,6 +325,21 @@ void test_erase() {
   m.erase(it[0], it[1]);
   print_container_nl(m);
   std::cout << "size = " << m.size() << std::endl;
+  // TEST IF ITERATOR STILL CORRECT AFTER ERASE
+  TEST_NAMESPACE::map<int, int> z;
+  for(int i = 0; i< 10; i++){
+    z.insert(TEST_NAMESPACE::make_pair(i, i));
+  }
+  std::cout << z.size();
+  TEST_NAMESPACE::map<int, int>::iterator y = z.begin();
+  int x = 0;
+  while (x < 4){
+    y++;
+    x++;
+  }
+  z.erase(3);
+  std::cout << z.size();
+  std::cout << y->first << std::endl;
 }
 
 struct KeyCompareInt {
@@ -683,7 +698,6 @@ void	map_tests(){
 	test_upper_bound();
 	std::cout << "--- Test equal_range ---" << std::endl;
 	test_equal_range();
-	// clear_test();
 	std::cout << "--- Test count ---" << std::endl;
 	count_test();
 	std::cout << "--- Test get_allocator ---" << std::endl;
@@ -749,46 +763,5 @@ int	main(void) {
 	map_tests();
 	vector_tests();
 	stack_tests();
-	
 	return 0;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-	//STACK
-	// TEST_NAMESPACE::vector<int> v;
-
-	// for (int i = 42; i < 46 ; i++) v.push_back(i);
-
-	// TEST_NAMESPACE::stack<int> s(v);
-
-	// std::cout << "stack's top = " << s.top() << std::endl;
-
-	
-	
